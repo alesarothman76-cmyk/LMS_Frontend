@@ -82,57 +82,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-## 📁 Project Structure
 
-```text
-src/
-├── app/                    # Next.js App Router
-│   ├── layout.tsx         # Root layout with providers
-│   ├── page.tsx           # Home page
-│   ├── login/             # Authentication pages
-│   │   └── page.tsx
-│   ├── register/
-│   │   └── page.tsx
-│   └── books/             # Book management features
-│       ├── page.tsx       # Book list
-│       ├── new/           # Create book
-│       ├── [id]/          # Book detail & edit
-│       └── layout.tsx
-├── features/              # Feature-based modules
-│   ├── auth/              # Authentication logic
-│   │   ├── components/    # Auth-related components
-│   │   ├── hooks/         # Auth hooks
-│   │   └── api/           # Auth API calls
-│   └── books/             # Book management logic
-│       ├── components/    # Book components
-│       ├── hooks/         # Book hooks
-│       └── api/           # Book API calls
-├── shared/                # Shared utilities
-│   ├── api/
-│   │   ├── client.ts      # Axios instance with interceptors
-│   │   └── session.ts     # LocalStorage session management
-│   ├── components/        # Reusable UI components
-│   ├── hooks/             # Shared hooks
-│   └── lib/               # Utility functions
-└── types/                 # TypeScript type definitions
-```
-
-## 🔐 Authentication (Option A)
-
-This application uses **JWT-based authentication** with localStorage:
-
-- **Login/Register:** POST requests to `/api/auth/login` or `/api/auth/register`
-- **Token Storage:** JWT stored in localStorage (not httpOnly cookies)
-- **Request Auth:** `Authorization: Bearer <token>` header on all protected requests
-- **Session Management:** Handled client-side via `shared/api/session.ts`
-- **Protected Routes:** Client-side guards check authentication status
-- **401 Handling:** Auto-logout and redirect to `/login` on unauthorized responses
-
-### Protected Routes
-
-The following routes require authentication:
-- `/books/new` - Create new book
-- `/books/[id]/edit` - Edit existing book
 
 ## 🎨 UI Components
 
