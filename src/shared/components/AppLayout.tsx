@@ -22,6 +22,9 @@ import {
   Search,
   User,
   HelpCircle,
+  Clock,
+  Cpu,
+  Bookmark,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -33,33 +36,33 @@ interface NavigationItem {
 }
 
 const navigationItems: NavigationItem[] = [
-  { name: "الرئيسية", href: "/", icon: Home, description: "لوحة التحكم الرئيسية" },
+  { name: "Main Dashboard", href: "/", icon: Home, description: "Main control panel" },
   {
-    name: "قوالب الموارد",
+    name: "Resource Templates",
     href: "/resourceTemplate",
     icon: FileCode,
-    description: "إدارة وتصميم هياكل وقوالب الموارد البيانات",
+    description: "Manage and design structures and data resource templates",
   },
   {
-    name: "المفردات (Vocabularies)",
+    name: "Vocabularies",
     href: "/vocabularies",
     icon: Layers,
-    description: "إدارة فضاءات الأسماء والبادئات والمصطلحات",
+    description: "Manage namespaces, prefixes, and terms",
   },
-  { name: "العناصر (Items)", href: "/items", icon: Database, description: "تصفح وإدارة عناصر البيانات الفردية" },
+  { name: "Items", href: "/items", icon: Database, description: "Browse and manage individual data items" },
   {
-    name: "مجموعات العناصر (Sets)",
+    name: "Item Sets",
     href: "/itemSets",
     icon: BookOpen,
-    description: "تنظيم العناصر في مجموعات هيكلية متناسقة",
+    description: "Organize items into structured, consistent collections",
   },
   {
-    name: "الوسائط (Media)",
+    name: "Media",
     href: "/media",
     icon: ImageIcon,
-    description: "إدارة الصور والملفات المرفقة بالموارد",
+    description: "Manage images and files attached to resources",
   },
-  { name: "الإعدادات", href: "/settings", icon: Settings, description: "إعدادات النظام والخيارات العامة" },
+  { name: "Settings", href: "/settings", icon: Settings, description: "System settings and general configuration" },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -67,31 +70,35 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   // State
-//  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
- // const [isDarkMode, setIsDarkMode] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-
-
+  const [mounted, setMounted] = useState(false);
   
-            const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
-          if (typeof window !== "undefined") {
-            const savedTheme = localStorage.getItem("theme");
-            const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-            return savedTheme === "dark" || (!savedTheme && systemPrefersDark);
-          }
-          return false;
-        });
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      const savedTheme = localStorage.getItem("theme");
+      const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      return savedTheme === "dark" || (!savedTheme && systemPrefersDark);
+    }
+    return false;
+  });
 
-            const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(() => {
-        if (typeof window !== "undefined") {
-          return localStorage.getItem("sidebar-collapsed") === "true";
-        }
-        return false;
-      });
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("sidebar-collapsed") === "true";
+    }
+    return false;
+  });
 
-      useEffect(() => {
+  useEffect(() => {
+    const handle = requestAnimationFrame(() => {
+      setMounted(true);
+    });
+    return () => cancelAnimationFrame(handle);
+  }, []);
+
+  useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add("dark");
       localStorage.setItem("theme", "dark");
@@ -105,27 +112,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     localStorage.setItem("sidebar-collapsed", String(isSidebarCollapsed));
   }, [isSidebarCollapsed]);
-
-   // Initialize theme and sidebar collapse from localStorage
-  // useEffect(() => {
-  //   if (typeof window !== "undefined") {
-  //     const savedTheme = localStorage.getItem("theme");
-  //     const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  //     const shouldBeDark = savedTheme === "dark" || (!savedTheme && systemPrefersDark);
-      
-  //     setIsDarkMode(shouldBeDark);
-  //     if (shouldBeDark) {
-  //       document.documentElement.classList.add("dark");
-  //     } else {
-  //       document.documentElement.classList.remove("dark");
-  //     }
-
-  //     const savedCollapse = localStorage.getItem("sidebar-collapsed");
-  //     if (savedCollapse === "true") {
-  //       setIsSidebarCollapsed(true);
-  //     }
-  //   }
-  // }, []);
 
   // Toggle Dark Mode
   const toggleDarkMode = () => {
@@ -157,346 +143,317 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const currentItem = navigationItems.find(
     (item) => item.href === pathname || (item.href !== "/" && pathname.startsWith(item.href))
   );
-  const pageTitle = currentItem ? currentItem.name : "نظام إدارة البيانات الوصفية (LMS)";
+  const pageTitle = currentItem ? currentItem.name : "Metadata Management System (LMS)";
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors duration-200 dark:bg-zinc-950 dark:text-zinc-50 flex font-sans" dir="rtl">
+    <div className="min-h-screen bg-[#3a352e] text-[#f4f1eb] flex flex-col font-serif transition-colors duration-200 selection:bg-[#9c8465] selection:text-white" dir="ltr">
       
-      {/* 1. Desktop Sidebar */}
-      <aside
-        className={cn(
-          "hidden md:flex flex-col border-l border-slate-200 bg-white transition-all duration-300 ease-in-out dark:border-zinc-800 dark:bg-zinc-900 relative z-30",
-          isSidebarCollapsed ? "w-20" : "w-64"
-        )}
-      >
-        {/* Sidebar Header */}
-        <div className="h-16 flex items-center px-4 border-b border-slate-100 dark:border-zinc-800 justify-between">
-          <div className="flex items-center gap-3 overflow-hidden">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/20">
-              <Layers className="h-5 w-5" />
-            </div>
-            {!isSidebarCollapsed && (
-              <div className="flex flex-col text-right">
-                <span className="font-bold text-sm leading-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent dark:from-blue-400 dark:to-indigo-400">
-                  نظام LMS
-                </span>
-                <span className="text-xxs text-slate-400 dark:text-zinc-500">
-                  البيانات الوصفية
-                </span>
-              </div>
-            )}
+      {/* --- TOP BANNER --- */}
+      <header className="relative min-h-[220px] bg-neutral-950 border-b border-[#4d463d] overflow-hidden flex flex-col justify-between p-4 sm:p-6">
+        <div 
+          className="absolute inset-0 bg-cover bg-center mix-blend-luminosity opacity-20 pointer-events-none transform scale-105"
+          style={{ backgroundImage: `url('https://wallpaperaccess.com/full/253342.jpg')` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-[#181614]/90 pointer-events-none" />
+
+        {/* Top Header Row Utilities */}
+        <div className="relative z-10 flex flex-wrap gap-4 justify-between items-center text-xxs tracking-wider uppercase text-[#c0b7a8]/70 font-mono" dir="ltr">
+          <div className="flex items-center gap-2 bg-black/40 border border-[#524a3e] px-2.5 py-1 rounded backdrop-blur-sm">
+            <Cpu className="h-3 w-3 text-[#9c8465]" />
+            <span>FEDERATED NODE ID: <span className="text-[#e2dacb]">DLMS-PROD-LWS-001</span></span>
           </div>
-        </div>
 
-        {/* Sidebar Collapse Toggle Button */}
-        <button
-          onClick={toggleSidebar}
-          className="absolute -left-3 top-20 bg-white border border-slate-200 rounded-full p-1 text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-all shadow-sm z-40 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100"
-          aria-label="Toggle Sidebar"
-        >
-          {isSidebarCollapsed ? (
-            <ChevronLeft className="h-3.5 w-3.5" />
-          ) : (
-            <ChevronRight className="h-3.5 w-3.5" />
-          )}
-        </button>
-
-        {/* Navigation Items */}
-        <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
-          {navigationItems.map((item) => {
-            const isActive =
-              item.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group relative",
-                  isActive
-                    ? "bg-gradient-to-l from-blue-50 to-indigo-50/50 text-blue-600 dark:from-blue-950/40 dark:to-indigo-950/20 dark:text-blue-400"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-100"
-                )}
-                title={isSidebarCollapsed ? item.name : undefined}
-              >
-                <item.icon
-                  className={cn(
-                    "h-5 w-5 shrink-0 transition-transform group-hover:scale-105",
-                    isActive
-                      ? "text-blue-600 dark:text-blue-400"
-                      : "text-slate-400 group-hover:text-slate-600 dark:text-zinc-500 dark:group-hover:text-zinc-300"
-                  )}
-                />
-                {!isSidebarCollapsed && (
-                  <span className="truncate">{item.name}</span>
-                )}
-                {/* Active Indicator Bar */}
-                {isActive && (
-                  <div className="absolute right-0 top-1/4 bottom-1/4 w-1 rounded-l bg-blue-600 dark:bg-blue-400" />
-                )}
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Help & Support / Docs link */}
-        <div className="p-3 border-t border-slate-100 dark:border-zinc-800">
-          <Link
-            href="/docs"
-            className={cn(
-              "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-all dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-100",
-              isSidebarCollapsed && "justify-center"
-            )}
-          >
-            <HelpCircle className="h-5 w-5 shrink-0 text-slate-400 dark:text-zinc-500" />
-            {!isSidebarCollapsed && <span>مساعدة وتوثيق</span>}
-          </Link>
-        </div>
-      </aside>
-
-      {/* 2. Mobile Drawer / Sidebar Overlay */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-50 flex">
-          {/* Backdrop overlay */}
-          <div
-            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-
-          {/* Drawer content */}
-          <aside className="relative flex flex-col w-64 max-w-xs bg-white dark:bg-zinc-900 h-full border-l border-slate-200 dark:border-zinc-800 z-50 animate-slide-in">
-            <div className="h-16 flex items-center px-4 border-b border-slate-100 dark:border-zinc-800 justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 text-white">
-                  <Layers className="h-4.5 w-4.5" />
-                </div>
-                <span className="font-bold text-sm bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent dark:from-blue-400 dark:to-indigo-400">
-                  نظام LMS
-                </span>
-              </div>
-              <button
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="p-1 rounded-lg hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-400 hover:text-slate-600 dark:hover:text-zinc-200"
-              >
-               Open Menu
-                <X className="h-5 w-5" />
-              </button>
+          <div className="flex items-center gap-5">
+            <div className="flex items-center gap-1.5">
+              <Clock className="h-3 w-3" />
+              <span>UTC RECORDING TIMESTAMP: <span className="text-[#e2dacb]">2026-06-05 22:04:12</span></span>
             </div>
-
-            <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
-              {navigationItems.map((item) => {
-                const isActive =
-                  item.href === "/"
-                    ? pathname === "/"
-                    : pathname.startsWith(item.href);
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={cn(
-                      "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group relative",
-                      isActive
-                        ? "bg-blue-50 text-blue-600 dark:bg-blue-950/30 dark:text-blue-400"
-                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-100"
-                    )}
-                  >
-                    <item.icon
-                      className={cn(
-                        "h-5 w-5 shrink-0",
-                        isActive
-                          ? "text-blue-600 dark:text-blue-400"
-                          : "text-slate-400 group-hover:text-slate-600 dark:text-zinc-500"
-                      )}
-                    />
-                    <span>{item.name}</span>
-                  </Link>
-                );
-              })}
-            </nav>
-
-            <div className="p-4 border-t border-slate-100 dark:border-zinc-800 space-y-3">
-              <button
-                onClick={toggleDarkMode}
-                className="flex w-full items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 dark:text-zinc-400 dark:hover:bg-zinc-800/50"
-              >
-                {isDarkMode ? (
-                  <>
-                    <Sun className="h-5 w-5 text-amber-500" />
-                    <span>الوضع المضيء</span>
-                  </>
-                ) : (
-                  <>
-                    <Moon className="h-5 w-5 text-indigo-500" />
-                    <span>الوضع المظلم</span>
-                  </>
-                )}
-              </button>
-
-              <button
-                onClick={handleLogout}
-                className="flex w-full items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/20"
-              >
-                <LogOut className="h-5 w-5" />
-                <span>تسجيل الخروج</span>
-              </button>
-            </div>
-          </aside>
-        </div>
-      )}
-
-      {/* 3. Main Workspace Container */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-        
-        {/* Navbar */}
-        <header className="h-16 border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-20 flex items-center px-4 justify-between transition-colors dark:border-zinc-800 dark:bg-zinc-900/80">
-          
-          {/* Left section: Utilities & Actions */}
-          <div className="flex items-center gap-3.5">
-            {/* Profile Dropdown */}
+            
+            {/* User Profile Button Action Trigger */}
             <div className="relative">
               <button
                 onClick={() => {
                   setIsProfileOpen(!isProfileOpen);
                   setIsNotificationsOpen(false);
                 }}
-                className="flex items-center gap-2.5 pr-1.5 pl-3 py-1.5 rounded-full border border-slate-150 bg-slate-50/50 hover:bg-slate-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-850 transition-all"
+                className="flex items-center gap-1.5 bg-black/40 hover:bg-neutral-900 border border-[#524a3e] px-2.5 py-1 rounded relative transition-colors"
               >
-                <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xs shadow-inner">
-                  أ
-                </div>
-                <div className="flex flex-col text-right hidden sm:flex">
-                  <span className="text-xs font-bold text-slate-800 dark:text-zinc-200">أمين المكتبة</span>
-                  <span className="text-xxs text-slate-400 dark:text-zinc-500">librarian@lms.local</span>
-                </div>
+                <User className="h-3 w-3 text-[#9c8465]" />
+                <span className="lowercase font-sans text-xs text-[#e2dacb]">librarian@lms.local</span>
               </button>
-
+              
               {isProfileOpen && (
-                <div className="absolute left-0 mt-2.5 w-56 bg-white border border-slate-200 dark:border-zinc-800 dark:bg-zinc-900 rounded-2xl shadow-xl py-2 z-50 text-right animate-fade-in">
-                  <div className="px-4 py-2 border-b border-slate-100 dark:border-zinc-800 sm:hidden">
-                    <p className="font-bold text-xs text-slate-800 dark:text-zinc-200">أمين المكتبة</p>
-                    <p className="text-xxs text-slate-400 dark:text-zinc-500">librarian@lms.local</p>
+                <div className="absolute right-0 top-full mt-2 w-56 bg-[#2c2822] border border-[#524a3e] rounded shadow-xl py-2 z-50 text-left font-serif" dir="ltr">
+                  <div className="px-4 py-2 border-b border-[#413b32] sm:hidden">
+                    <p className="font-bold text-xs text-[#fdfbf7]">Librarian</p>
+                    <p className="text-xxs text-[#9c8465]">librarian@lms.local</p>
                   </div>
                   <Link
                     href="/profile"
                     onClick={() => setIsProfileOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2 text-xs text-slate-700 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800"
+                    className="flex items-center gap-3 px-4 py-2 text-xs text-[#b2a899] hover:bg-[#3e3830] hover:text-[#fdfbf7]"
                   >
-                    <User className="h-4 w-4 text-slate-400" />
-                    <span>الملف الشخصي</span>
+                    <User className="h-4 w-4 text-[#9c8465]" />
+                    <span>Profile</span>
                   </Link>
                   <Link
                     href="/settings"
                     onClick={() => setIsProfileOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2 text-xs text-slate-700 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800"
+                    className="flex items-center gap-3 px-4 py-2 text-xs text-[#b2a899] hover:bg-[#3e3830] hover:text-[#fdfbf7]"
                   >
-                    <Settings className="h-4 w-4 text-slate-400" />
-                    <span>إعدادات الحساب</span>
+                    <Settings className="h-4 w-4 text-[#9c8465]" />
+                    <span>Account Settings</span>
                   </Link>
-                  <div className="border-t border-slate-100 dark:border-zinc-800 my-1" />
+                  <div className="border-t border-[#413b32] my-1" />
                   <button
                     onClick={handleLogout}
-                    className="flex w-full items-center gap-3 px-4 py-2 text-xs text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/20"
+                    className="flex w-full items-center gap-3 px-4 py-2 text-xs text-red-400 hover:bg-red-950/20"
                   >
                     <LogOut className="h-4 w-4" />
-                    <span>تسجيل الخروج</span>
+                    <span>Logout</span>
                   </button>
                 </div>
               )}
             </div>
+          </div>
+        </div>
 
-            {/* Notifications Button */}
+        {/* Central Display Header */}
+        <div className="relative z-10 my-4 text-left">
+          <p className="text-xxs tracking-widest font-mono text-[#9c8465] uppercase mb-1">
+            UNIVERSITY OF CAIRO • DIGITAL LIBRARY MANAGEMENT SYSTEM (DLMS)
+          </p>
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-wide text-[#fdfbf7] font-serif mb-2">
+            Academic Digital Library Management System
+          </h1>
+          <p className="text-xs italic font-serif text-[#c5bcae] max-w-4xl tracking-wide opacity-90">
+            Empowering bilingual manuscripts codicology curation, active metadata namespaces indexing, and federated media storage checks.
+          </p>
+        </div>
+
+        {/* Subtitle Architecture Row & Notifications Controls */}
+        <div className="relative z-10 flex justify-between items-center text-xxs font-mono text-[#a19787] border-t border-[#443d34]/60 pt-3 mt-2">
+          <div>DEC DECOUPLED ARCHITECTURE • ASP.NET CORE v8 BACKEND BINDINGS</div>
+          
+          <div className="flex items-center gap-4">
+            {/* Notification Logic Integration */}
             <div className="relative">
               <button
                 onClick={() => {
                   setIsNotificationsOpen(!isNotificationsOpen);
                   setIsProfileOpen(false);
                 }}
-                className="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 text-slate-500 hover:text-slate-800 dark:border-zinc-800 dark:hover:bg-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 transition-all relative"
+                className="hover:text-[#fdfbf7] relative flex items-center gap-1.5"
                 aria-label="Notifications"
               >
-                <Bell className="h-4.5 w-4.5" />
-                <span className="absolute top-1 left-1 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-zinc-900" />
+                <Bell className="h-3.5 w-3.5" />
+                <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
               </button>
 
               {isNotificationsOpen && (
-                <div className="absolute left-0 mt-2.5 w-80 bg-white border border-slate-200 dark:border-zinc-800 dark:bg-zinc-900 rounded-2xl shadow-xl py-3 z-50 text-right animate-fade-in">
-                  <div className="px-4 py-2 border-b border-slate-100 dark:border-zinc-800 flex justify-between items-center">
-                    <span className="font-bold text-sm">الإشعارات</span>
-                    <button className="text-xxs text-blue-500 hover:underline">تحديد الكل كمقروء</button>
+                <div className="absolute right-0 mt-2.5 w-80 bg-[#2c2822] border border-[#524a3e] rounded shadow-xl py-3 z-50 text-left font-serif" dir="ltr">
+                  <div className="px-4 py-2 border-b border-[#413b32] flex justify-between items-center">
+                    <span className="font-bold text-sm text-[#fdfbf7]">Notifications</span>
+                    <button className="text-xxs text-blue-400 hover:underline">Mark all as read</button>
                   </div>
-                  <div className="max-h-64 overflow-y-auto px-2 py-1 space-y-1">
-                    <div className="p-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-zinc-800/50 text-xs">
-                      <p className="font-semibold text-slate-700 dark:text-zinc-200">تم إنشاء قالب كتب دراسية بنجاح</p>
-                      <span className="text-xxs text-slate-400 dark:text-zinc-500">منذ دقيقتين</span>
+                  <div className="max-h-64 overflow-y-auto px-2 py-1 space-y-1 text-xs text-[#b2a899]">
+                    <div className="p-2.5 rounded hover:bg-[#322d26]">
+                      <p className="font-semibold text-[#fdfbf7]">Textbook template created successfully</p>
+                      <span className="text-xxs text-[#9c8465]">2 minutes ago</span>
                     </div>
-                    <div className="p-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-zinc-800/50 text-xs">
-                      <p className="font-semibold text-slate-700 dark:text-zinc-200">هناك عنصر جديد تم ربطه بمصطلح خارجي</p>
-                      <span className="text-xxs text-slate-400 dark:text-zinc-500">منذ ساعة</span>
+                    <div className="p-2.5 rounded hover:bg-[#322d26]">
+                      <p className="font-semibold text-[#fdfbf7]">A new item has been linked to an external term</p>
+                      <span className="text-xxs text-[#9c8465]">1 hour ago</span>
                     </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Theme Toggle (Desktop Only) */}
-            <button
-              onClick={toggleDarkMode}
-              className="hidden md:flex p-2 rounded-xl border border-slate-100 hover:bg-slate-50 text-slate-500 hover:text-slate-800 dark:border-zinc-800 dark:hover:bg-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 transition-all"
-              aria-label="Toggle Theme"
-            >
-              {isDarkMode ? (
-                <Sun className="h-4.5 w-4.5 text-amber-500" />
+            {/* Dark Mode Logic Integration */}
+            <button onClick={toggleDarkMode} className="hover:text-[#fdfbf7]">
+              {mounted ? (
+                isDarkMode ? <Sun className="h-3.5 w-3.5 text-amber-500" /> : <Moon className="h-3.5 w-3.5 text-indigo-400" />
               ) : (
-                <Moon className="h-4.5 w-4.5 text-indigo-500" />
+                <span className="h-3.5 w-3.5 inline-block" />
               )}
             </button>
           </div>
+        </div>
+      </header>
 
-          {/* Middle section: Global Search Bar */}
-          <div className="hidden lg:flex w-96 max-w-xs relative items-center">
-            <Search className="absolute right-3.5 h-4 w-4 text-slate-400 dark:text-zinc-500" />
-            <input
-              type="text"
-              placeholder="البحث عن قالب، عنصر، أو قيمة..."
-              className="w-full text-xs pr-10 pl-4 py-2 border border-slate-200 rounded-xl bg-slate-50/50 hover:bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none dark:border-zinc-800 dark:bg-zinc-800/40 dark:hover:bg-zinc-800/80 dark:focus:bg-zinc-900 text-right"
-            />
-          </div>
-
-          {/* Right section: Breadcrumbs / Title & Menu Button */}
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:flex flex-col text-right">
-              <div className="flex items-center gap-1.5 text-xxs text-slate-400 dark:text-zinc-500">
-                <span>الرئيسية</span>
-                <span>/</span>
-                <span className="text-blue-500 dark:text-blue-400 font-medium">
-                  {pageTitle}
-                </span>
+      {/* --- CONTENT CONTAINER WORKSPACE --- */}
+      <div className="flex-1 flex flex-col md:flex-row bg-[#211e1a]">
+        
+        {/* LEFT SIDEBAR PANEL */}
+        <aside
+          className={cn(
+            "hidden md:flex flex-col border-r border-[#413b32] bg-[#2c2822] transition-all duration-300 ease-in-out relative z-30 shrink-0",
+            isSidebarCollapsed ? "w-20" : "w-64"
+          )}
+        >
+          {/* Internal Title Header */}
+          <div className="h-14 flex items-center px-4 border-b border-[#413b32] bg-[#24211c] justify-between">
+            <div className="flex items-center gap-3 overflow-hidden">
+              <div className="p-1.5 bg-[#3e3830] border border-[#564e43] rounded text-[#cbbfae] shrink-0">
+                <Bookmark className="h-4 w-4" />
               </div>
-              <h2 className="font-bold text-base text-slate-800 dark:text-zinc-100 leading-tight">
-                {pageTitle}
-              </h2>
+              {!isSidebarCollapsed && (
+                <div className="flex flex-col text-left">
+                  <span className="font-mono text-xs uppercase font-bold text-[#fdfbf7] tracking-wider">
+                    DLMS CONSOLE
+                  </span>
+                  <span className="font-mono text-xxs text-[#9c8465]">
+                    Build Version 1.0.42
+                  </span>
+                </div>
+              )}
             </div>
-            <button
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="md:hidden p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-800"
-              aria-label="Open sidebar menu"
+          </div>
+
+          {/* Collapse Toggle Trigger */}
+          <button
+            onClick={toggleSidebar}
+            className="absolute -right-3 top-16 bg-[#2c2822] border border-[#524a3e] rounded-full p-1 text-[#b2a899] hover:text-[#fdfbf7] transition-all shadow-sm z-40"
+            aria-label="Toggle Sidebar"
+          >
+            {isSidebarCollapsed ? (
+              <ChevronRight className="h-3.5 w-3.5" />
+            ) : (
+              <ChevronLeft className="h-3.5 w-3.5" />
+            )}
+          </button>
+
+          {/* Navigation Iteration Block */}
+          <nav className="flex-1 py-4 px-2 space-y-1 bg-[#26221e] overflow-y-auto">
+            {navigationItems.map((item) => {
+              const isActive =
+                item.href === "/"
+                  ? pathname === "/"
+                  : pathname.startsWith(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2.5 rounded text-sm transition-all group relative border",
+                    isActive
+                      ? "bg-[#ecdcc5] text-[#29241e] border-[#eedfcb] font-bold shadow-inner"
+                      : "text-[#b2a899] bg-transparent border-transparent hover:bg-[#322d26] hover:text-[#fdfbf7]"
+                  )}
+                  title={isSidebarCollapsed ? item.name : undefined}
+                >
+                  <item.icon
+                    className={cn(
+                      "h-4 w-4 shrink-0 transition-transform group-hover:scale-105",
+                      isActive ? "text-[#75634a]" : "text-[#776d5e]"
+                    )}
+                  />
+                  {!isSidebarCollapsed && (
+                    <span className="truncate text-xs tracking-wide">{item.name}</span>
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Footer Area Link */}
+          <div className="p-2 bg-[#211e1a] border-t border-[#413b32]">
+            <Link
+              href="/docs"
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded text-xs text-[#b2a899] hover:text-[#fdfbf7] hover:bg-[#322d26] transition-all",
+                isSidebarCollapsed && "justify-center"
+              )}
             >
-              <Menu className="h-5.5 w-5.5" />
-            </button>
+              <HelpCircle className="h-4 w-4 text-[#776d5e]" />
+              {!isSidebarCollapsed && <span>Help & Docs</span>}
+            </Link>
+          </div>
+        </aside>
+
+        {/* MOBILE MENU NAVIGATION DRAWER OVERLAY */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden fixed inset-0 z-50 flex">
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
+            <aside className="relative flex flex-col w-64 max-w-xs bg-[#2c2822] h-full border-r border-[#413b32] z-50">
+              <div className="h-16 flex items-center px-4 bg-[#24211c] border-b border-[#413b32] justify-between">
+                <span className="font-bold text-sm text-[#fdfbf7]">LMS System</span>
+                <button onClick={() => setIsMobileMenuOpen(false)} className="text-[#b2a899] hover:text-[#fdfbf7]">
+                  Open Menu
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <nav className="flex-1 p-3 space-y-1 bg-[#26221e] overflow-y-auto">
+                {navigationItems.map((item) => {
+                  const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2.5 rounded text-xs border transition-all",
+                        isActive ? "bg-[#ecdcc5] text-[#29241e] border-[#eedfcb]" : "text-[#b2a899] border-transparent hover:bg-[#322d26]"
+                      )}
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.name}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
+              <div className="p-4 bg-[#211e1a] border-t border-[#413b32] space-y-2">
+                <button onClick={handleLogout} className="flex w-full items-center gap-3 px-3 py-2.5 rounded text-xs text-red-400 hover:bg-red-950/20">
+                  <LogOut className="h-4 w-4" />
+                  <span>Logout</span>
+                </button>
+              </div>
+            </aside>
+          </div>
+        )}
+
+        {/* WORKSPACE AREA CONTAINER */}
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+          
+          {/* Breadcrumb Navbar Layout Alignment */}
+          <div className="h-12 border-b border-[#413b32] bg-[#24211c]/80 backdrop-blur-md flex items-center px-4 justify-between">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="md:hidden p-2 text-[#b2a899] hover:text-[#fdfbf7]"
+                aria-label="Open sidebar menu"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+              
+              <div className="hidden sm:flex items-center gap-1.5 text-xxs font-mono text-[#9c8465]">
+                <span>Home</span>
+                <span>/</span>
+                <span className="text-[#fdfbf7] font-medium">{pageTitle}</span>
+              </div>
+            </div>
+
+            {/* Global Search Input Field Context */}
+            <div className="hidden lg:flex w-80 relative items-center">
+              <Search className="absolute left-3 h-3.5 w-3.5 text-[#776d5e]" />
+              <input
+                type="text"
+                placeholder="Search template, item, or value..."
+                className="w-full text-xs pl-9 pr-4 py-1.5 border border-[#524a3e] rounded bg-[#1c1916] text-[#f4f1eb] placeholder-[#776d5e] focus:outline-none focus:border-[#9c8465] text-left font-serif"
+              />
+            </div>
           </div>
 
-        </header>
+          {/* Dynamic Content Workspace Rendering Body */}
+          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-[#efebe4] text-[#292520]">
+            <div className="max-w-7xl mx-auto h-full">
+              {children}
+            </div>
+          </main>
+        </div>
 
-        {/* Content Body */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-          <div className="max-w-7xl mx-auto h-full">
-            {children}
-          </div>
-        </main>
       </div>
-
     </div>
   );
 }
