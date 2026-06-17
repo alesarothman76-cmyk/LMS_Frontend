@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useAuth } from "@/features/auth/context/AuthContext"; // Ensure accurate import path
+import { useAuth } from "@/features/auth/context/AuthContext";
+import type { UserRole } from "@/features/auth/types";
 import {
   Home,
   FileCode,
@@ -49,15 +50,22 @@ interface NavigationItem {
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   description?: string;
+  allowedRoles?: UserRole[]; // Strongly typed to match UserRole union constraints
 }
 
 const navigationItems: NavigationItem[] = [
-  { name: "Main Dashboard", href: "/", icon: Home, description: "Main control panel" },
+  { 
+    name: "Main Dashboard", 
+    href: "/", 
+    icon: Home, 
+    description: "Main control panel" 
+  },
   {
     name: "Resource Templates",
     href: "/resourceTemplate",
     icon: FileCode,
     description: "Manage and design structures and data resource templates",
+    allowedRoles: ["Admin", "Librarian"],
   },
   {
     name: "Vocabularies",
@@ -65,7 +73,12 @@ const navigationItems: NavigationItem[] = [
     icon: Layers,
     description: "Manage namespaces, prefixes, and terms",
   },
-  { name: "Items", href: "/items", icon: Database, description: "Browse and manage individual data items" },
+  { 
+    name: "Items", 
+    href: "/items", 
+    icon: Database, 
+    description: "Browse and manage individual data items" 
+  },
   {
     name: "Item Sets",
     href: "/itemSets",
@@ -78,15 +91,19 @@ const navigationItems: NavigationItem[] = [
     icon: ImageIcon,
     description: "Manage images and files attached to resources",
   },
-  { name: "Settings", href: "/settings", icon: Settings, description: "System settings and general configuration" },
+  { 
+    name: "Settings", 
+    href: "/settings", 
+    icon: Settings, 
+    description: "System settings and general configuration" 
+  },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   
-  // 🔐 Pull authentication state metrics from global Context
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, hasRole } = useAuth();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -109,7 +126,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     return false;
   });
 
-  // Track the framework hydration/mount gate boundary
   useEffect(() => {
     const handle = requestAnimationFrame(() => {
       setMounted(true);
@@ -127,32 +143,32 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }, [isDarkMode]);
 
-  // Synchronize Sidebar states to storage
   useEffect(() => {
     localStorage.setItem("sidebar-collapsed", String(isSidebarCollapsed));
   }, [isSidebarCollapsed]);
 
-  // Toggle Dark Mode
   const toggleDarkMode = () => {
-    const nextDark = !isDarkMode;
-    setIsDarkMode(nextDark);
+    setIsDarkMode(!isDarkMode);
   };
 
-  // Toggle Sidebar Collapse
   const toggleSidebar = () => {
     setIsSidebarCollapsed((prev) => !prev);
   };
 
-  // Handle Logout syncing with backend auth Context rules
   const handleLogout = async () => {
     await logout();
     setIsProfileOpen(false);
     setIsMobileMenuOpen(false);
   };
 
-  // Get active page name for breadcrumb/title
-  const currentItem = navigationItems.find(
-    (item) => item.href === pathname || (item.href !== "/" && pathname.startsWith(item.href))
+  // 🛠️ Dynamic Role Filtering Matrix matching middleware specifications
+  const visibleNavigationItems = navigationItems.filter((item) => {
+    if (!item.allowedRoles) return true;
+    return hasRole(item.allowedRoles);
+  });
+
+  const currentItem = visibleNavigationItems.find(
+    (item) => item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)
   );
   const pageTitle = currentItem ? currentItem.name : "Metadata Management System (LMS)";
 
@@ -161,12 +177,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen bg-[#3a352e] text-[#f4f1eb] flex flex-col font-serif transition-colors duration-200 selection:bg-[#9c8465] selection:text-white" dir="ltr">
         
         {/* --- TOP BANNER --- */}
-        <header className="relative min-h-[220px] bg-neutral-950 border-b border-[#4d463d] overflow-hidden flex flex-col justify-between p-4 sm:p-6">
+        <header className="relative min-h-55 bg-neutral-950 border-b border-[#4d463d] overflow-hidden flex flex-col justify-between p-4 sm:p-6">
           <div 
             className="absolute inset-0 bg-cover bg-center mix-blend-luminosity opacity-20 pointer-events-none transform scale-105"
             style={{ backgroundImage: `url('https://wallpaperaccess.com/full/253342.jpg')` }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-[#181614]/90 pointer-events-none" />
+          <div className="absolute inset-0 bg-linear-to-b from-black/80 via-black/40 to-[#181614]/90 pointer-events-none" />
 
           {/* Top Header Row Utilities */}
           <div className="relative z-10 flex flex-wrap gap-4 justify-between items-center text-xxs tracking-wider uppercase text-[#c0b7a8]/70 font-mono" dir="ltr">
@@ -181,7 +197,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <span>UTC RECORDING TIMESTAMP: <span className="text-[#e2dacb]">2026-06-05 22:04:12</span></span>
               </div>
               
-              {/* User Profile - Standardized via DropdownMenu primitive */}
+              {/* Fixed Dropdown Wrapper: Evaluated completely outside the Trigger boundary */}
               {mounted && isAuthenticated && user && (
                 <DropdownMenu open={isProfileOpen} onOpenChange={setIsProfileOpen}>
                   <DropdownMenuTrigger asChild>
@@ -238,15 +254,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </h1>
             <p className="text-xs italic font-serif text-[#c5bcae] max-w-4xl tracking-wide opacity-90">
               Empowering bilingual manuscripts codicology curation, active metadata namespaces indexing, and federated media storage checks.
-          </p>
+            </p>
           </div>
 
-          {/* Subtitle Architecture Row & Notifications Controls */}
+          {/* Subtitle Navigation Row & Notifications Controls */}
           <div className="relative z-10 flex justify-between items-center text-xxs font-mono text-[#a19787] border-t border-[#443d34]/60 pt-3 mt-2">
             <div>Welcome to the Academic Digital Library Management System</div>
             
             <div className="flex items-center gap-4">
-              {/* Notification Overlay Menu Primitive */}
               <DropdownMenu open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen}>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -279,7 +294,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Theme Selection Toggle Button */}
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -306,7 +320,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               isSidebarCollapsed ? "w-20" : "w-64"
             )}
           >
-            {/* Internal Title Header */}
             <div className="h-14 flex items-center px-4 border-b border-[#413b32] bg-[#24211c] justify-between">
               <div className="flex items-center gap-3 overflow-hidden">
                 <div className="p-1.5 bg-[#3e3830] border border-[#564e43] rounded text-[#cbbfae] shrink-0">
@@ -325,7 +338,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </div>
             </div>
 
-            {/* Collapse Toggle Control Action */}
             <Button
               variant="outline"
               size="icon"
@@ -333,21 +345,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               className="absolute -right-3 top-16 bg-[#2c2822] border-[#524a3e] hover:bg-[#322d26] rounded-full h-6 w-6 p-0 text-[#b2a899] hover:text-[#fdfbf7] transition-all shadow-sm z-40"
               aria-label="Toggle Sidebar"
             >
-              {isSidebarCollapsed ? (
-                <ChevronRight className="h-3.5 w-3.5" />
-              ) : (
-                <ChevronLeft className="h-3.5 w-3.5" />
-              )}
+              {isSidebarCollapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronLeft className="h-3.5 w-3.5" />}
             </Button>
 
-            {/* Navigation Navigation Items Area Container */}
             <ScrollArea className="flex-1 bg-[#26221e]">
               <nav className="py-4 px-2 space-y-1">
-                {navigationItems.map((item) => {
-                  const isActive =
-                    item.href === "/"
-                      ? pathname === "/"
-                      : pathname.startsWith(item.href);
+                {visibleNavigationItems.map((item) => {
+                  const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
                   
                   const linkContent = (
                     <Link
@@ -371,7 +375,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     </Link>
                   );
 
-                  // If layout is collapsed, wrap each sidebar navigation item in an accessible Tooltip primitive
                   return isSidebarCollapsed ? (
                     <Tooltip key={item.href}>
                       <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
@@ -386,7 +389,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </nav>
             </ScrollArea>
 
-            {/* Footer Area Help documentation Links */}
             <div className="p-2 bg-[#211e1a] border-t border-[#413b32]">
               {isSidebarCollapsed ? (
                 <Tooltip>
@@ -432,7 +434,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </div>
                 <ScrollArea className="flex-1 bg-[#26221e]">
                   <nav className="p-3 space-y-1">
-                    {navigationItems.map((item) => {
+                    {visibleNavigationItems.map((item) => {
                       const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
                       return (
                         <Link
@@ -455,7 +457,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   <Button 
                     variant="ghost" 
                     onClick={handleLogout} 
-                    className="flex w-full justify-start items-center gap-3 px-3 py-2.5 rounded text-xs text-red-400 hover:bg-red-950/20 hover:text-red-300 font-normal h-auto hover:bg-transparent"
+                    className="flex w-full justify-start items-center gap-3 px-3 py-2.5 rounded text-xs text-red-400 hover:bg-red-950/20 hover:text-red-300 font-normal h-auto"
                   >
                     <LogOut className="h-4 w-4" />
                     <span>Logout</span>
@@ -467,8 +469,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
           {/* WORKSPACE AREA CONTAINER */}
           <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-            
-            {/* Breadcrumb Navbar Layout Alignment */}
             <div className="h-12 border-b border-[#413b32] bg-[#24211c]/80 backdrop-blur-md flex items-center px-4 justify-between">
               <div className="flex items-center gap-3">
                 <Button
@@ -488,7 +488,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </div>
               </div>
 
-              {/* Global Search Input Field Context */}
               <div className="hidden lg:flex w-80 relative items-center">
                 <Search className="absolute left-3 h-3.5 w-3.5 text-[#776d5e] z-10" />
                 <Input
@@ -499,7 +498,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </div>
             </div>
 
-            {/* Dynamic Content Workspace Rendering Body */}
             <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-[#efebe4] text-[#292520]">
               <div className="max-w-7xl mx-auto h-full">
                 {children}
@@ -509,6 +507,42 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         </div>
       </div>
+
+      {/* --- DEVELOPER ROLE SWITCHER STUDIO HUD --- */}
+      {process.env.NODE_ENV === "development" && mounted && user && (
+        <div className="fixed bottom-4 right-4 z-50 bg-[#1c1916] border-2 border-[#9c8465] p-3 rounded-lg shadow-2xl flex flex-col gap-2 font-mono text-[10px] text-[#e2dacb] max-w-xs backdrop-blur-md opacity-90 hover:opacity-100 transition-opacity">
+          <div className="flex items-center justify-between border-b border-[#413b32] pb-1.5 font-bold uppercase text-[#9c8465]">
+            <span>⚙️ Dev Role Studio</span>
+            <span className="bg-[#3e3830] px-1 rounded text-white text-[9px]">Local</span>
+          </div>
+          
+          <div className="space-y-1">
+            <p className="text-[#a19787]">Active: <span className="text-emerald-400 lowercase">{user.email}</span></p>
+            <p className="text-[#a19787]">Current Role: <span className="text-amber-400 font-bold uppercase">{user.role || "None"}</span></p>
+          </div>
+
+          <div className="grid grid-cols-3 gap-1 mt-1">
+            {(["Admin", "Librarian", "Member"] as UserRole[]).map((targetRole) => (
+              <button
+                key={targetRole}
+                onClick={() => {
+                  user.role = targetRole;
+                  router.refresh(); // Hot-reloads the template routing conditions smoothly
+                }}
+                className={cn(
+                  "px-1.5 py-1 rounded border transition-all active:scale-95 font-bold",
+                  user.role === targetRole
+                    ? "bg-[#ecdcc5] text-[#29241e] border-white"
+                    : "bg-[#2c2822] border-[#413b32] text-[#b2a899] hover:bg-[#322d26] hover:text-[#fdfbf7]"
+                )}
+              >
+                {targetRole}
+              </button>
+            ))}
+          </div>
+          <p className="text-[8px] italic text-[#776d5e] text-center mt-0.5">Click roles to simulate sidebar access live.</p>
+        </div>
+      )}
     </TooltipProvider>
   );
 }

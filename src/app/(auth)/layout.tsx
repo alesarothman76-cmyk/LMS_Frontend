@@ -31,12 +31,12 @@ export default function AuthLayout({
         {/* Card */}
         <div className="relative bg-[#1e1b18]/95 border border-[#3a342c] rounded-lg shadow-2xl overflow-hidden backdrop-blur-md">
           {/* Top accent line */}
-          <div className="h-px w-full bg-gradient-to-r from-transparent via-[#9c8465] to-transparent" />
+          <div className="h-px w-full bg-linear-to-r from-transparent via-[#9c8465] to-transparent" />
 
           <div className="px-8 py-10">{children}</div>
 
           {/* Bottom accent line */}
-          <div className="h-px w-full bg-gradient-to-r from-transparent via-[#3a342c] to-transparent" />
+          <div className="h-px w-full bg-linear-to-r from-transparent via-[#3a342c] to-transparent" />
         </div>
 
         {/* Version badge */}

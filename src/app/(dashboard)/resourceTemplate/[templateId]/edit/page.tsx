@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useUpdateTemplate } from '../../../../features/resourceTemplate/hooks/useUpdateTemplate';
-import { resourceService } from '../../../../features/resourceTemplate/services/resourceService';
+import { useUpdateTemplate } from '../../../../../features/resourceTemplate/hooks/useUpdateTemplate';
+import { resourceService } from '../../../../../features/resourceTemplate/services/resourceService';
 import { useParams } from 'next/navigation';
 
 export default function EditTemplatePage() {
@@ -50,10 +50,12 @@ export default function EditTemplatePage() {
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Field for Template Label */}
                 <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Template Label *</label>
+                    <label htmlFor="template-label" className="block text-sm font-bold text-gray-700 mb-2">Template Label *</label>
                     <input
+                        id="template-label"
                         type="text"
                         required
+                        placeholder="Enter template label"
                         className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none"
                         value={formData.label}
                         onChange={(e) => setFormData({ ...formData, label: e.target.value })}
@@ -62,9 +64,11 @@ export default function EditTemplatePage() {
 
                 {/* Field for Template Description */}
                 <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Description</label>
+                    <label htmlFor="template-description" className="block text-sm font-bold text-gray-700 mb-2">Description</label>
                     <textarea
+                        id="template-description"
                         rows={4}
+                        placeholder="Enter template description"
                         className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none"
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}

@@ -22,7 +22,7 @@ export default function LoginPage() {
         <p className="mt-1.5 font-mono text-xs uppercase tracking-widest text-[#9c8465]">
           Authenticated Access Portal
         </p>
-        <div className="mt-4 h-px w-full bg-gradient-to-r from-transparent via-[#3a342c] to-transparent" />
+        <div className="mt-4 h-px w-full bg-linear-to-r from-transparent via-[#3a342c] to-transparent" />
       </div>
 
       <LoginForm />
