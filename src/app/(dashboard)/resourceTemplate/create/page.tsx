@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from 'react';
-import { useCreateTemplate } from '../../../features/resourceTemplate/hooks/useCreateTemplate';
+import { useCreateTemplate } from '../../../../features/resourceTemplate/hooks/useCreateTemplate';
 
 export default function CreateTemplatePage() {
     const [formData, setFormData] = useState({ label: '', description: '' });

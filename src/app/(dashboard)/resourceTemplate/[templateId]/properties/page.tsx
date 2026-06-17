@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios, { AxiosError } from 'axios';
-import { resourceService } from '../../../../features/resourceTemplate/services/resourceService';
+import { resourceService } from '../../../../../features/resourceTemplate/services/resourceService';
 
 interface TemplatePropertyItem {
     propertyId: number;
@@ -250,18 +250,24 @@ const handleUpdateRow = async (item: TemplatePropertyItem) => {
                                     </td>
                                     
                                     <td className="p-4 text-center">
+                                        <label htmlFor={`required-${item.propertyId}`} className="sr-only">Required</label>
                                         <input 
                                             type="checkbox"
                                             className="w-5 h-5 rounded text-emerald-600 border-gray-300 cursor-pointer"
+                                            id={`required-${item.propertyId}`}
+                                            title="مطلوب؟"
                                             checked={item.isRequired}
                                             onChange={(e) => handleLocalFieldChange(item.propertyId, 'isRequired', e.target.checked)}
                                         />
                                     </td>
                                     
                                     <td className="p-4 text-center">
+                                        <label htmlFor={`displayOrder-${item.propertyId}`} className="sr-only">Display Order</label>
                                         <input 
                                             type="number"
                                             className="w-16 p-2 text-center bg-gray-50 border border-gray-200 rounded-xl font-bold outline-none focus:border-blue-500"
+                                            id={`displayOrder-${item.propertyId}`}
+                                            title="الترتيب"
                                             value={item.displayOrder}
                                             onChange={(e) => handleLocalFieldChange(item.propertyId, 'displayOrder', Number(e.target.value))}
                                         />
@@ -271,6 +277,8 @@ const handleUpdateRow = async (item: TemplatePropertyItem) => {
                                         <input 
                                             type="text"
                                             className="w-full p-2 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-blue-500 text-right"
+                                            id={`alternateLabel-${item.propertyId}`}
+                                            title="التسمية البديلة"
                                             value={item.alternateLabel || ''}
                                             placeholder="لا توجد تسمية بديلة"
                                             onChange={(e) => handleLocalFieldChange(item.propertyId, 'alternateLabel', e.target.value || null)}

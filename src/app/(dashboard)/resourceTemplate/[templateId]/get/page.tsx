@@ -1,8 +1,8 @@
 "use client";
 
 import { useParams } from 'next/navigation';
-import { useTemplateValues } from '../../../../features/resourceTemplate/hooks/useTemplateValues';
-import { useDeleteTemplate } from '../../../../features/resourceTemplate/hooks/useDeleteTemplate';
+import { useTemplateValues } from '../../../../../features/resourceTemplate/hooks/useTemplateValues';
+import { useDeleteTemplate } from '../../../../../features/resourceTemplate/hooks/useDeleteTemplate';
 
 export default function ResourceValuesPage() {
     const params = useParams();
@@ -34,7 +34,7 @@ export default function ResourceValuesPage() {
             <div className="space-y-5">
                 <div>
                     <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wide">Description</h3>
-                    <p className="text-gray-700 mt-1.5 bg-gray-50 p-4 rounded-2xl border border-gray-100 min-h-[80px]">
+                    <p className="text-gray-700 mt-1.5 bg-gray-50 p-4 rounded-2xl border border-gray-100 min-h-20">
                         {template?.description || <span className="text-gray-300 italic">No description provided for this template.</span>}
                     </p>
                 </div>
