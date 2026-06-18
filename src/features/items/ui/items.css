@@ -1,0 +1,298 @@
+/* Items feature — "catalog card" visual language.
+   This metadata/EAV feature is literally a library cataloging system,
+   so the UI borrows from index-card registries: paper tones, a serif
+   for titles, a small mono "stamp" marking each field's data type. */
+
+:root {
+  --catalog-paper: #faf8f4;
+  --catalog-ink: #1c1a17;
+  --catalog-ink-soft: #6b6358;
+  --catalog-border: #e8e2d6;
+  --catalog-leather: #8b5e3c;
+  --catalog-leather-deep: #6e4a2e;
+  --catalog-moss: #3d5a4c;
+  --catalog-stamp-red: #c9402f;
+}
+
+.catalog-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+  color: var(--catalog-ink);
+}
+
+.catalog-page__header h1 {
+  font-family: Georgia, "Iowan Old Style", serif;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+}
+
+.catalog-page__header p {
+  color: var(--catalog-ink-soft);
+  font-size: 0.9rem;
+  margin: 0 0 2rem;
+}
+
+/* ---- List ---- */
+
+.catalog-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.catalog-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1.1rem;
+  background: var(--catalog-paper);
+  border: 1px solid var(--catalog-border);
+  border-radius: 6px;
+  flex-wrap: wrap;
+}
+
+.catalog-row--skeleton {
+  height: 52px;
+  background: linear-gradient(90deg, var(--catalog-border) 25%, #f3efe5 50%, var(--catalog-border) 75%);
+  background-size: 200% 100%;
+  animation: catalog-shimmer 1.4s infinite;
+  border: none;
+}
+
+@keyframes catalog-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.catalog-row__main {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.catalog-row__id {
+  font-family: "SF Mono", "JetBrains Mono", ui-monospace, monospace;
+  color: var(--catalog-ink-soft);
+  font-size: 0.78rem;
+}
+
+.catalog-row__template {
+  font-weight: 600;
+}
+
+.catalog-row__count {
+  color: var(--catalog-ink-soft);
+  font-size: 0.8rem;
+}
+
+.catalog-row__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.catalog-confirm {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--catalog-stamp-red);
+}
+
+/* ---- Buttons ---- */
+
+.catalog-btn {
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.45rem 0.85rem;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: opacity 0.15s ease;
+}
+
+.catalog-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.catalog-btn:hover:not(:disabled) { opacity: 0.85; }
+.catalog-btn:focus-visible {
+  outline: 2px solid var(--catalog-leather);
+  outline-offset: 2px;
+}
+
+.catalog-btn--primary {
+  background: var(--catalog-leather);
+  color: white;
+}
+
+.catalog-btn--ghost {
+  background: transparent;
+  border-color: var(--catalog-border);
+  color: var(--catalog-ink);
+}
+
+.catalog-btn--danger {
+  background: var(--catalog-stamp-red);
+  color: white;
+}
+
+.catalog-btn--danger-ghost {
+  background: transparent;
+  border-color: var(--catalog-border);
+  color: var(--catalog-stamp-red);
+}
+
+/* ---- Empty / error states ---- */
+
+.catalog-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--catalog-ink-soft);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.catalog-empty--error {
+  color: var(--catalog-stamp-red);
+}
+
+/* ---- Form ---- */
+
+.catalog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.catalog-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.catalog-field__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+/* field position tab — mirrors the template's real displayOrder, like a
+   library card's printed field number */
+.catalog-field__order {
+  font-family: "SF Mono", "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.68rem;
+  color: var(--catalog-ink-soft);
+  border: 1px solid var(--catalog-border);
+  border-radius: 3px;
+  padding: 0.1rem 0.35rem;
+  flex-shrink: 0;
+}
+
+.catalog-field__label {
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.catalog-field__required {
+  color: var(--catalog-stamp-red);
+  font-size: 0.72rem;
+  margin-left: 0.4rem;
+  font-weight: 500;
+}
+
+.catalog-field__hint {
+  font-size: 0.78rem;
+  color: var(--catalog-ink-soft);
+  margin: 0;
+}
+
+.catalog-field__error {
+  font-size: 0.78rem;
+  color: var(--catalog-stamp-red);
+  margin: 0;
+}
+
+.catalog-input {
+  font-size: 0.92rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--catalog-border);
+  border-radius: 5px;
+  background: white;
+  color: var(--catalog-ink);
+}
+
+.catalog-input:focus-visible {
+  outline: 2px solid var(--catalog-leather);
+  outline-offset: 1px;
+}
+
+.catalog-form__actions {
+  margin-top: 0.5rem;
+}
+
+/* ---- Detail card ---- */
+
+.catalog-card {
+  background: var(--catalog-paper);
+  border: 1px solid var(--catalog-border);
+  border-radius: 8px;
+  padding: 1.75rem;
+}
+
+.catalog-card__header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--catalog-border);
+  padding-bottom: 1rem;
+}
+
+.catalog-card__title {
+  font-family: Georgia, "Iowan Old Style", serif;
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.catalog-card__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin: 0 0 1.5rem;
+}
+
+.catalog-card__field dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--catalog-ink-soft);
+  margin-bottom: 0.15rem;
+}
+
+.catalog-card__field dd {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.catalog-card__lang {
+  margin-left: 0.5rem;
+  font-size: 0.72rem;
+  color: var(--catalog-ink-soft);
+}
+
+.catalog-card__footer {
+  display: flex;
+  gap: 0.6rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .catalog-row--skeleton { animation: none; }
+}

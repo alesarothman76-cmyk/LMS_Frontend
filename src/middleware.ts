@@ -31,7 +31,7 @@ import type { NextRequest } from "next/server";
 // Cookie name — must match what AuthContext writes
 // ---------------------------------------------------------------------------
 export const AUTH_COOKIE_NAME = "lms_auth_token";
-export const ROLE_COOKIE_NAME = "lms_user_roles"; // comma-separated: "Admin,Librarian"
+export const ROLE_COOKIE_NAME = "lms_user_role"; // comma-separated: "Admin,Librarian"
 
 // ---------------------------------------------------------------------------
 // Route rule definitions
@@ -51,6 +51,15 @@ const LIBRARIAN_PATHS = [
   "/resourceTemplate/create",
   "/resourceTemplate/",  // edit, properties sub-routes
 ];
+
+/**
+ * Matches "/items/<id>/edit" — can't be expressed as a simple prefix because
+ * "/items/<id>" (view) must stay open to Members while "/items/<id>/edit"
+ * must not.
+ */
+function isItemEditPath(pathname: string): boolean {
+  return /^\/items\/[^/]+\/edit$/.test(pathname);
+}
 
 /**
  * Routes that require Admin role only.
@@ -114,7 +123,7 @@ export function middleware(request: NextRequest) {
   }
 
   // Librarian + Admin paths
-  if (matchesAny(pathname, LIBRARIAN_PATHS)) {
+  if (matchesAny(pathname, LIBRARIAN_PATHS) || isItemEditPath(pathname)) {
     if (!roles.includes("Admin") && !roles.includes("Librarian")) {
       return NextResponse.redirect(new URL("/unauthorized", request.url));
     }
