@@ -103,7 +103,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   
-  const { user, isAuthenticated, logout, hasRole } = useAuth();
+  const { user, isAuthenticated, logout, hasRole, setRole } = useAuth();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -164,6 +164,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   // 🛠️ Dynamic Role Filtering Matrix matching middleware specifications
   const visibleNavigationItems = navigationItems.filter((item) => {
     if (!item.allowedRoles) return true;
+    if (!mounted) return false;
     return hasRole(item.allowedRoles);
   });
 
@@ -526,7 +527,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <button
                 key={targetRole}
                 onClick={() => {
-                  user.role = targetRole;
+                  setRole(targetRole);
                   router.refresh(); // Hot-reloads the template routing conditions smoothly
                 }}
                 className={cn(

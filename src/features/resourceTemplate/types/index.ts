@@ -26,6 +26,7 @@ export interface PropertyToTemplateInput {
     isRequired: boolean;
     displayOrder: number;
     alternateLabel: string | null;
+    
 }
 
 // object used in the frontend to represent a property linked to a template, includes additional info for display purposes

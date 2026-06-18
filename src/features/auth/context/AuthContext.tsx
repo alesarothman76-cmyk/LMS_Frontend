@@ -31,6 +31,7 @@ interface AuthContextValue extends AuthState {
   register: (data: RegisterRequest) => Promise<void>;
   logout: () => Promise<void>;
   hasRole: (role: UserRole | UserRole[]) => boolean;
+  setRole: (role: UserRole) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -128,7 +129,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isLoading: false, // Starts as false immediately because rehydration happens instantly
     };
   });
-  
+
+  // inside AuthProvider (add to exported context value)
+
   // ----- login -----
   const login = useCallback(async (credentials: LoginRequest) => {
     const response = await authApi.login(credentials);
@@ -148,7 +151,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setState({ user, isAuthenticated: true, isLoading: false });
   }, []);
 
-  // ----- register -----
+  // ----- register ----- 
   const register = useCallback(async (data: RegisterRequest) => {
     const response = await authApi.register(data);
 
@@ -190,8 +193,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [state.user]
   );
 
+  // ----- set role (persisted) -----
+  const setRole = useCallback((role: UserRole) => {
+    setState((prev) => {
+      if (!prev.user) return prev;
+      const updated: AuthUser = { ...prev.user, role };
+      // persist updated user (localStorage + cookies)
+      persistUser(updated);
+      return { ...prev, user: updated, isAuthenticated: true };
+    });
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ ...state, login, register, logout, hasRole }}>
+    <AuthContext.Provider value={{ ...state, login, register, logout, hasRole, setRole }}>
       {children}
     </AuthContext.Provider>
   );
