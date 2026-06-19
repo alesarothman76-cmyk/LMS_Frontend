@@ -1,12 +1,32 @@
 export interface CreateResourceTemplateDto {
     label: string;
     description: string;
+    propertyIds: number[];
+    // optional detailed links to attach after creation
+    propertyLinks?: PropertyToTemplateInput[];
+}
+
+export interface UpdateResourceTemplateDto {
+    label: string;
+    description: string;
 }
 
 export interface GetTemplate {
     id: number;
     label: string;
     description: string;
+}
+
+export interface TemplatePropertyItem {
+    propertyId: number;
+    propertyName: string;
+    isRequired: boolean;
+    displayOrder: number;
+    alternateLabel: string | null;
+}
+
+export interface GetTemplateWithProperties extends GetTemplate {
+    properties: TemplatePropertyItem[];
 }
 
 export interface DeleteTemplateResponse {

@@ -48,8 +48,7 @@ const LIBRARIAN_PATHS = [
   "/items/new",
   "/itemSets/new",
   "/media/upload",
-  "/resourceTemplate/create",
-  "/resourceTemplate/",  // edit, properties sub-routes
+  "/resourceTemplate/edit",  // edit, properties sub-routes
 ];
 
 /**
@@ -139,11 +138,11 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths EXCEPT:
-     * - _next/static  (Next.js build output)
-     * - _next/image   (Image optimisation)
+     * مطابقة جميع المسارات باستثناء:
+     * - _next/static (مخرجات البناء لـ Next.js، بما في ذلك الخطوط)
+     * - _next/image (تحسين الصور)
      * - favicon.ico, sitemap.xml, robots.txt
-     * - public folder assets
+     * - الأصول الموجودة في مجلد public
      */
     "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff2?|ttf|otf)).*)",
   ],

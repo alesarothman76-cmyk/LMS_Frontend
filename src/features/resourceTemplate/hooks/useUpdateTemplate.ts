@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { resourceService } from '../services/resourceService';
-import { CreateResourceTemplateDto } from '../types';
+import { UpdateResourceTemplateDto } from '../types';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
@@ -9,7 +9,7 @@ export const useUpdateTemplate = () => {
     const [updateError, setUpdateError] = useState<string | null>(null);
     const router = useRouter();
 
-    const update = async (templateId: number, data: CreateResourceTemplateDto) => {
+    const update = async (templateId: number, data: UpdateResourceTemplateDto) => {
         setIsUpdating(true);
             setUpdateError(null);        try {
             const result = await resourceService.updateTemplate(templateId, data);
