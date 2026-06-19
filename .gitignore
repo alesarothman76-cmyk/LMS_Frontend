@@ -53,5 +53,8 @@ Thumbs.db
 *.swo
 *.lock
 
+# Mock data
+src/features/**/mock/
+
 # OneDrive
 ~$*

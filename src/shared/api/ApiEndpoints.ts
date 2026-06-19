@@ -33,21 +33,23 @@ export const ApiEndpoints = {
   CHECK_OWNERSHIP: (id: number) => `/itemsets/${id}/ownership`,
 },
   media: {
-  BASE: '/media',
-  CREATE: '/media',
-  UPLOAD: '/media/upload',
-  EDIT: (id: number) => `/media/${id}`,
-  DELETE: (mediaId: number) => `/media/${mediaId}`,
-  GET_BY_ITEM: (itemId: number) => `/media/item/${itemId}`,
-  DOWNLOAD: (mediaId: number) => `/media/download/${mediaId}`,
-  GET_BY_MIME_TYPE: (mimetype: string) => `/media/by-mimetype?mimetype=${encodeURIComponent(mimetype)}`,
-  GET_BY_OWNER: (ownerId: string) => `/media/by-owner/${ownerId}`,
-  GET_METADATA: (mediaId: number) => `/media/metadata/${mediaId}`,
-   },
+    BASE: '/media',
+    CREATE: '/media',
+    UPLOAD: '/media/upload',
+    EDIT: (id: number) => `/media/${id}`,
+    DELETE: (mediaId: number) => `/media/${mediaId}`,
+    GET_BY_ITEM: (itemId: number) => `/api/media/item/${itemId}`,
+    DOWNLOAD: (mediaId: number) => `/api/media/download/${mediaId}`,
+    GET_ALL_MEDIA: '/media', 
+    GET_BY_MIME_TYPE: (mimetype: string) => `/api/media/by-mimetype?mimetype=${encodeURIComponent(mimetype)}`,
+    GET_BY_OWNER: (ownerId: string) => `/api/media/by-owner/${ownerId}`,
+    GET_METADATA: (mediaId: number) => `/api/media/metadata/${mediaId}`, 
+  },
   resourceTemplates:  {
   BASE: '/resourcetemplate',
   CREATE: '/resourcetemplate', // Requires Auth
   GET_BY_ID: (id: number) => `/resourcetemplate/${id}`, // Public
+  GET_ALL: '/resourceTemplate', // All Templates
   UPDATE: (id: number) => `/resourcetemplate/${id}`, // Requires Auth
   DELETE: (id: number) => `/resourcetemplate/${id}`, // Requires Auth
   ADD_PROPERTIES: (templateId: number) => `/resourcetemplate/${templateId}/properties`, // Requires Auth

@@ -2,7 +2,7 @@
 
 // Cookie names must match middleware.ts
 const AUTH_COOKIE_NAME = "lms_auth_token";
-const ROLE_COOKIE_NAME = "lms_user_role";
+const ROLE_COOKIE_NAME = "lms_user_roles";
 
 import React, {
   createContext,
