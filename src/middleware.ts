@@ -48,7 +48,8 @@ const LIBRARIAN_PATHS = [
   "/items/new",
   "/itemSets/new",
   "/media/upload",
-  "/resourceTemplate/edit",  // edit, properties sub-routes
+  "/resourceTemplate/edit",
+  "vocabularies/create"  // edit, properties sub-routes
 ];
 
 /**
@@ -66,8 +67,7 @@ function isItemEditPath(pathname: string): boolean {
  */
 const ADMIN_PATHS = [
   "/admin",
-  "/vocabularies/new",
-  "/vocabularies/create",
+  "vocabularies/create",
   "/users",
 ];
 
