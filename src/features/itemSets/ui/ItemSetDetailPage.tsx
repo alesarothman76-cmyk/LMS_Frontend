@@ -32,11 +32,11 @@ import {
 } from "@/shared/ui/tooltip";
 
 import {useAddItemToSet} from "../hooks/useAddItemToSet";
-
+import{useRemoveItemFromSet} from "../hooks/useRemoveItemFromSet";
 import {
   useItemSet,
-  useRemoveItemFromSet,
-} from "../hooks";
+  
+} from "../hooks/useItemSet";
 
 export default function ItemSetDetailPage() {
   const params = useParams<{ id: string }>();
