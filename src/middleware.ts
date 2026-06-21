@@ -31,7 +31,7 @@ import type { NextRequest } from "next/server";
 // Cookie name — must match what AuthContext writes
 // ---------------------------------------------------------------------------
 export const AUTH_COOKIE_NAME = "lms_auth_token";
-export const ROLE_COOKIE_NAME = "lms_user_role"; // comma-separated: "Admin,Librarian"
+export const ROLE_COOKIE_NAME = "lms_user_roles"; // comma-separated: "Admin,Librarian"
 
 // ---------------------------------------------------------------------------
 // Route rule definitions

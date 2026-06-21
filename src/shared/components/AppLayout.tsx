@@ -27,6 +27,7 @@ import {
   Clock,
   Cpu,
   Bookmark,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -90,6 +91,13 @@ const navigationItems: NavigationItem[] = [
     href: "/media",
     icon: ImageIcon,
     description: "Manage images and files attached to resources",
+  },
+  {
+    name: "Users",
+    href: "/admin/users",
+    icon: Users,
+    description: "Manage user roles and account status",
+    allowedRoles: ["Admin"],
   },
   { 
     name: "Settings", 
