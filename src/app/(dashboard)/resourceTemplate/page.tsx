@@ -20,6 +20,10 @@ export default function ResourceTemplateListPage() {
         router.push('/resourceTemplate/create');
     };
 
+    const handleUpdateRedirect = (id: number | string)  => {
+        router.push(`/resourceTemplate/${id}/edit`);
+    };
+
     return (
         <TemplateListView 
             templates={templates}
@@ -27,6 +31,7 @@ export default function ResourceTemplateListPage() {
             error={error}
             onRefresh={handleRefresh}
             onViewTemplate={handleViewTemplate}
+            onEditTemplate={handleUpdateRedirect}
             onCreateRedirect={handleCreateRedirect}
         />
     );

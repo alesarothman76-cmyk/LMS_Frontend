@@ -2,7 +2,13 @@
 
 import React, { useState } from 'react';
 
+export interface PropertyItem {
+    id: string | number;
+    name: string; 
+}
+
 interface AddPropertyFormProps {
+    availableProperties: PropertyItem[];
     onAddProperty: (newProperty: {
         propertyId: string;
         isRequired: boolean;
@@ -13,7 +19,12 @@ interface AddPropertyFormProps {
     totalProperties: number;
 }
 
-export default function AddPropertyForm({ onAddProperty, isAdding, totalProperties }: AddPropertyFormProps) {
+export default function AddPropertyForm({ 
+    availableProperties, 
+    onAddProperty, 
+    isAdding, 
+    totalProperties 
+}: AddPropertyFormProps) {
     const [newProperty, setNewProperty] = useState({
         propertyId: '',
         isRequired: false,
@@ -36,54 +47,62 @@ export default function AddPropertyForm({ onAddProperty, isAdding, totalProperti
     };
 
     return (
-        <form onSubmit={handleSubmit} className="mb-10 p-6 bg-blue-50/20 border border-blue-100/70 rounded-2xl text-right">
-            <h2 className="text-base font-black text-blue-700 mb-4">➕ Link and add a new property to the template</h2>
+        <form onSubmit={handleSubmit} className="mb-10 p-6 bg-zinc-50 border border-zinc-200 rounded-2xl">
+            <h2 className="text-base font-black text-zinc-900 mb-6 flex items-center gap-2">
+                <span className="bg-zinc-200 w-8 h-8 rounded-full flex items-center justify-center text-sm">+</span> 
+                Link New Property
+            </h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
                 <div>
-                    <label className="block text-xs font-bold text-gray-600 mb-2">Property ID *</label>
-                    <input 
-                        type="number"
+                    <label className="block text-xs font-bold text-zinc-600 mb-2">Select Property *</label>
+                    <select 
                         required
-                        placeholder="Property ID from DB"
-                        className="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none text-center font-bold text-sm focus:border-blue-500 transition-colors"
+                        className="w-full p-3 bg-white border border-zinc-200 rounded-xl outline-none font-bold text-sm focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 transition-all cursor-pointer"
                         value={newProperty.propertyId}
                         onChange={e => setNewProperty({...newProperty, propertyId: e.target.value})}
-                    />
+                    >
+                        <option value="" disabled>-- Choose a property --</option>
+                        {availableProperties.map(prop => (
+                            <option key={prop.id} value={prop.id}>
+                                {prop.name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 <div>
-                    <label className="block text-xs font-bold text-gray-600 mb-2">Alternate label in template (optional)</label>
+                    <label className="block text-xs font-bold text-zinc-600 mb-2">Alternate Label (Optional)</label>
                     <input 
                         type="text"
-                        placeholder="Alternate Label"
-                        className="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none text-right text-sm focus:border-blue-500 transition-colors"
+                        placeholder="Label"
+                        className="w-full p-3 bg-white border border-zinc-200 rounded-xl outline-none text-sm focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 transition-all"
                         value={newProperty.alternateLabel}
                         onChange={e => setNewProperty({...newProperty, alternateLabel: e.target.value})}
                     />
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-xs font-bold text-gray-600 mb-2">Display order</label>
+                        <label className="block text-xs font-bold text-zinc-600 mb-2">Order</label>
                         <input 
                             type="number"
                             min="1"
                             placeholder={String(totalProperties + 1)}
-                            className="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none text-center font-bold text-sm focus:border-blue-500 transition-colors"
+                            className="w-full p-3 bg-white border border-zinc-200 rounded-xl outline-none font-bold text-sm focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 transition-all text-center"
                             value={newProperty.displayOrder}
                             onChange={e => setNewProperty({...newProperty, displayOrder: e.target.value})}
                         />
                     </div>
                     <div className="flex items-center justify-center pb-3">
-                        <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-700 select-none">
+                        <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-zinc-700 hover:text-zinc-900 select-none">
                             <input 
                                 type="checkbox"
-                                className="w-4 h-4 rounded text-blue-600 border-gray-300 cursor-pointer"
+                                className="w-5 h-5 rounded text-zinc-900 border-zinc-300 cursor-pointer accent-zinc-900"
                                 checked={newProperty.isRequired}
                                 onChange={e => setNewProperty({...newProperty, isRequired: e.target.checked})}
                             />
-                            Required field?
+                            Required
                         </label>
                     </div>
                 </div>
@@ -92,9 +111,9 @@ export default function AddPropertyForm({ onAddProperty, isAdding, totalProperti
                     <button
                         type="submit"
                         disabled={isAdding || !newProperty.propertyId}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-md disabled:bg-gray-200 disabled:text-gray-400 transition-colors text-sm cursor-pointer"
+                        className="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-bold py-3 rounded-xl shadow-lg shadow-zinc-200 disabled:opacity-50 disabled:shadow-none transition-all text-sm cursor-pointer border-0"
                     >
-                        {isAdding ? "Linking and adding..." : "Link and add property"}
+                        {isAdding ? "Linking..." : "Link Property"}
                     </button>
                 </div>
             </div>

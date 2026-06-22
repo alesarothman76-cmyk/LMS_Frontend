@@ -14,7 +14,7 @@ export const useUpdateTemplate = () => {
             setUpdateError(null);        try {
             const result = await resourceService.updateTemplate(templateId, data);
             if (result.success) {
-                router.push(`/resourceTemplate/${templateId}/values`);
+                router.push(`/resourceTemplate/`);
                 router.refresh(); 
             }
         } catch (err: unknown) {

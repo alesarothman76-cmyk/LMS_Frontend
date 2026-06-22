@@ -10,7 +10,7 @@ import { Input } from "@/shared/ui/input";
 import { Checkbox } from "@/shared/ui/checkbox";
 
 import { useUpdateItemSet } from "../hooks/useUpdateItemSet";
-import { useItemSet } from "../hooks";
+import { useItemSet } from "../hooks/useItemSet";
 import { ResourceValueDto } from "@/features/items/types";
 
 // 1. Create a dedicated Form component that receives the initial data

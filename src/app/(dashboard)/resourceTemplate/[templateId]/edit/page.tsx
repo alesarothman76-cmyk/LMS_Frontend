@@ -54,6 +54,7 @@ export default function EditTemplatePage() {
 
             <EditTemplateForm 
                 formData={formData}
+                
                 setFormData={setFormData}
                 isUpdating={isUpdating}
                 updateError={updateError}
