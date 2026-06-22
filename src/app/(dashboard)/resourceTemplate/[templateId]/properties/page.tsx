@@ -1,13 +1,25 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { AxiosError } from 'axios';
 import { resourceService } from '../../../../../features/resourceTemplate/services/resourceService';
 import { TemplatePropertyItem } from '../../../../../features/resourceTemplate/types';
+import { PropertyItem } from '../../../../../features/resourceTemplate/ui/AddPropertyForm';
 import { useTemplateDetails } from '../../../../../features/resourceTemplate/hooks/useTemplateDetails';
 import AddPropertyForm from '../../../../../features/resourceTemplate/ui/AddPropertyForm';
 import PropertiesTable from '../../../../../features/resourceTemplate/ui/PropertiesTable';
+
+interface ApiProperty {
+    id: number | string;
+    label?: string;
+    name?: string;
+}
+
+interface ApiVocabulary {
+    id: number | string;
+    properties?: ApiProperty[];
+}
 
 export default function ManageTemplatePropertiesPage() {
     const params = useParams();
@@ -16,6 +28,60 @@ export default function ManageTemplatePropertiesPage() {
 
     const { linkedProperties, isLoading, actionError, refresh, setActionError, setLinkedProperties } = useTemplateDetails(templateId);
     const [isAdding, setIsAdding] = useState(false);
+    
+    const [availableProperties, setAvailableProperties] = useState<PropertyItem[]>([]);
+
+    useEffect(() => {
+        const fetchTemplateAndProperties = async () => {
+            try {
+                // 1. جلب تفاصيل القالب
+                const templateData = await resourceService.getTemplate(templateId);
+                console.log("Template Data Response:", templateData);
+                
+                const templateObj = templateData as unknown as Record<string, unknown>;
+                
+                // استخراج المعرف بشكل أشمل لضمان التقاطه سواء كان داخل كائن أو قيمة مباشرة
+                const vocabId = (templateObj.vocabularyId as number | string) || 
+                                ((templateObj.vocabulary as Record<string, unknown>)?.id as number | string) ||
+                                (templateObj.vocabulary as number | string);
+
+                console.log("Extracted Vocabulary ID:", vocabId);
+
+                if (!vocabId) {
+                    console.warn("No vocabulary associated with this template.");
+                    return;
+                }
+
+                // 2. جلب جميع الـ Vocabularies وخصائصها
+                const vocabularies = await resourceService.getVocabulariesWithProperties();
+                console.log("All Vocabularies Response:", vocabularies);
+                if (!vocabId) {
+    console.warn("No vocabulary associated with this template." + vocabId);
+    setActionError("This template is not associated with any vocabulary. Please link a vocabulary first.");
+    return;
+}
+                const vocabList = vocabularies as ApiVocabulary[];
+                const targetVocab = vocabList.find(v => Number(v.id) === Number(vocabId));
+                console.log("Matched Vocabulary:", targetVocab);
+
+                if (targetVocab && targetVocab.properties) {
+                    const mappedProperties: PropertyItem[] = targetVocab.properties.map((prop: ApiProperty) => ({
+                        id: prop.id,
+                        name: prop.label || prop.name || 'Unnamed'
+                    }));
+                    setAvailableProperties(mappedProperties);
+                } else {
+                    console.warn("No properties found for the matched vocabulary, or vocabulary not found.");
+                }
+            } catch (err) {
+                console.error("Failed to load available properties for vocabulary", err);
+            }
+        };
+
+        if (templateId) {
+            fetchTemplateAndProperties();
+        }
+    }, [templateId]);
 
     const handleAddProperty = async (newProp: { propertyId: string; isRequired: boolean; displayOrder: string; alternateLabel: string }) => {
         setIsAdding(true);
@@ -110,10 +176,12 @@ export default function ManageTemplatePropertiesPage() {
                 </div>
             )}
 
-            <AddPropertyForm 
-                onAddProperty={handleAddProperty} 
-                isAdding={isAdding} 
-                totalProperties={linkedProperties.length} 
+            {/* ✅ تم توحيد اسم المكون هنا ليكون AddPropertyWrapperDebug */}
+            <AddPropertyWrapperDebug 
+                availableProperties={availableProperties}
+                onAddProperty={handleAddProperty}
+                isAdding={isAdding}
+                linkedPropertiesCount={linkedProperties.length}
             />
 
             <div className="mt-8">
@@ -126,5 +194,26 @@ export default function ManageTemplatePropertiesPage() {
                 />
             </div>
         </div>
+    );
+}
+
+// تعريف الواجهة لتمرير البروبس بشكل آمن وتجنب استخدام any
+interface WrapperProps {
+    availableProperties: PropertyItem[];
+    onAddProperty: (newProp: { propertyId: string; isRequired: boolean; displayOrder: string; alternateLabel: string }) => Promise<void>;
+    isAdding: boolean;
+    linkedPropertiesCount: number;
+}
+
+// ✅ تم تعديل الاسم هنا أيضاً إلى AddPropertyWrapperDebug
+function AddPropertyWrapperDebug({ availableProperties, onAddProperty, isAdding, linkedPropertiesCount }: WrapperProps) {
+    console.log("Properties passed to AddPropertyForm:", availableProperties);
+    return (
+        <AddPropertyForm 
+            availableProperties={availableProperties}
+            onAddProperty={onAddProperty} 
+            isAdding={isAdding} 
+            totalProperties={linkedPropertiesCount} 
+        />
     );
 }

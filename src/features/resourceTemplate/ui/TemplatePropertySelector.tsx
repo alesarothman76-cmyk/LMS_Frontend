@@ -1,6 +1,7 @@
+"use client";
+
 import { useState, useEffect } from 'react';
 import { resourceService } from '../services/resourceService';
-import { mockVocabularies } from '../mock/vocabularies';
 import { PropertyToTemplateInput } from '../types';
 
 export interface Property {
@@ -37,9 +38,8 @@ export const TemplatePropertySelector = ({ onChange }: Props) => {
                 }
             } catch (err) {
                 console.error("Error loading vocabularies, falling back to mock data", err);
-                setData(mockVocabularies);
             } finally {
-                setIsLoading(false);
+                 setIsLoading(false);
             }
         };
         fetchVocabularies();
@@ -57,11 +57,13 @@ export const TemplatePropertySelector = ({ onChange }: Props) => {
         }
 
         const results = Object.values(selectionMap).map(sel => {
-            const prop = vocab.properties.find(p => p.id === sel.propertyId);
+            // ✅ تم تحويل propertyId و sel.propertyId إلى Number لضمان التطابق
+            const prop = vocab.properties.find(p => Number(p.id) === Number(sel.propertyId));
             const fallbackLabel = prop?.label || '';
             const altLabel = sel.alternateLabel && sel.alternateLabel.trim() !== '' ? sel.alternateLabel.trim() : fallbackLabel;
             return {
                 ...sel,
+                propertyId: Number(sel.propertyId), // التأكد من حفظها كرقم
                 alternateLabel: altLabel
             };
         });
@@ -72,18 +74,19 @@ export const TemplatePropertySelector = ({ onChange }: Props) => {
     const handleVocabChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const val = e.target.value;
         setSelectedVocabId(val ? Number(val) : '');
-        setSelectionMap({}); // Clear selections when changing vocab
+        setSelectionMap({});
     };
 
     const toggleProperty = (prop: Property) => {
         setSelectionMap(prev => {
-            const exists = !!prev[prop.id];
+            const propIdNum = Number(prop.id); // ✅ توحيد المفتاح كرقم
+            const exists = !!prev[propIdNum];
             const newMap = { ...prev };
             if (exists) {
-                delete newMap[prop.id];
+                delete newMap[propIdNum];
             } else {
-                newMap[prop.id] = {
-                    propertyId: prop.id,
+                newMap[propIdNum] = {
+                    propertyId: propIdNum,
                     isRequired: false,
                     displayOrder: Object.keys(prev).length + 1,
                     alternateLabel: prop.label
@@ -95,9 +98,10 @@ export const TemplatePropertySelector = ({ onChange }: Props) => {
 
     const updateField = (id: number, field: keyof PropertyToTemplateInput, value: string | number | boolean | null) => {
         setSelectionMap(prev => {
-            const item = prev[id];
+            const idNum = Number(id); // ✅ توحيد المفتاح كرقم
+            const item = prev[idNum];
             if (!item) return prev;
-            return { ...prev, [id]: { ...item, [field]: value } };
+            return { ...prev, [idNum]: { ...item, [field]: value } };
         });
     };
 
@@ -126,8 +130,9 @@ export const TemplatePropertySelector = ({ onChange }: Props) => {
                     <label className="block text-sm font-bold text-zinc-700 mb-2">2. Select Properties</label>
                     <div className="h-64 overflow-y-auto pr-2 space-y-2 border border-zinc-100 rounded-xl p-2 bg-zinc-50/50">
                         {selectedVocab.properties?.map((prop) => {
-                            const selected = !!selectionMap[prop.id];
-                            const sel = selectionMap[prop.id];
+                            const propIdNum = Number(prop.id);
+                            const selected = !!selectionMap[propIdNum];
+                            const sel = selectionMap[propIdNum];
                             return (
                                 <div key={prop.id} className={`p-3 rounded-xl border transition-all ${selected ? 'bg-white border-zinc-300 shadow-sm' : 'border-transparent hover:bg-zinc-100'}`}>
                                     <div className="flex items-center space-x-3">

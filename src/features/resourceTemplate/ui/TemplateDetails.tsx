@@ -39,16 +39,8 @@ export const ResourceView: React.FC<ResourceViewProps> = ({
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="p-6 bg-zinc-50 rounded-2xl border border-zinc-200 flex flex-col justify-between">
-                    <div>
-                        <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest">System ID</h3>
-                        <p className="text-4xl font-black font-mono text-zinc-900 mt-3">
-                            #{template?.id || '---'}
-                        </p>
-                    </div>
-                </div>
-
+            {/* تم إزالة System ID والإبقاء على Status فقط ليأخذ العرض بالكامل بشكل مرتب */}
+            <div className="grid grid-cols-1 gap-6">
                 <div className="p-6 bg-zinc-50 rounded-2xl border border-zinc-200 flex flex-col justify-between">
                     <div>
                         <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Status</h3>

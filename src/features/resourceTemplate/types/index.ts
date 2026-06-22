@@ -36,7 +36,7 @@ export interface DeleteTemplateResponse {
 // object returned by the API for each property linked to a template
 export interface SystemProperty {
     id: number;
-    name: string;
+    label: string;
     type: string;
 }
 

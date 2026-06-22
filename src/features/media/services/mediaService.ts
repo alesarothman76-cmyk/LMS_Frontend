@@ -16,6 +16,12 @@ export const mediaService = {
     return response.data;
   },
 
+  // Fetch media data to populate the form
+  getMediaForEdit: async (mediaId: number): Promise<MediaDto> => {
+      const response = await apiClient.get<MediaDto>(`/media/metadata/${mediaId}`); 
+      return response.data;
+  },
+
   // 3. get media by MIME type
   getByMimeType: async (mimeType: string): Promise<MediaDto[]> => {
     const response = await apiClient.get<MediaDto[]>(ApiEndpoints.media.GET_BY_MIME_TYPE(mimeType));

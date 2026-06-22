@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { Button } from '../../../shared/ui/button'; 
 
 interface EditTemplateFormProps {
     formData: { label: string; description: string };
@@ -57,21 +58,21 @@ export default function EditTemplateForm({
 
             {/* Control Buttons */}
             <div className="flex gap-4 pt-4">
-                <button
+               <Button
                     type="submit"
                     disabled={isUpdating}
-                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-200 disabled:bg-emerald-300 transition-all cursor-pointer"
+                    className="flex-1 px-5 py-3 text-sm font-bold text-white bg-zinc-800 rounded-xl hover:bg-zinc-700 transition-all cursor-pointer border-0 disabled:opacity-50"
                 >
                     {isUpdating ? "Saving Changes..." : "Save Changes"}
-                </button>
+                </Button>
                 
-                <button
+                <Button
                     type="button"
                     onClick={onCancel}
                     className="px-8 py-4 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold rounded-2xl transition-all cursor-pointer"
                 >
                     Cancel
-                </button>
+                </Button>
             </div>
         </form>
     );

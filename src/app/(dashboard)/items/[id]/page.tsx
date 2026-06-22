@@ -2,7 +2,7 @@
 
 import { useParams, notFound } from "next/navigation";
 import { useAuth } from "@/features/auth/context/AuthContext";
-import { ItemDetail } from "@/features/items/components/ItemDetail";
+import { ItemDetail } from "@/features/items/ui/ItemDetail";
 import "@/features/items/items.css";
 
 export default function ItemDetailPage() {

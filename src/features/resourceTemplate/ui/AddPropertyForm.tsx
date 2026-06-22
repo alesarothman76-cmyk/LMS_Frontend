@@ -2,7 +2,13 @@
 
 import React, { useState } from 'react';
 
+export interface PropertyItem {
+    id: string | number;
+    name: string; 
+}
+
 interface AddPropertyFormProps {
+    availableProperties: PropertyItem[];
     onAddProperty: (newProperty: {
         propertyId: string;
         isRequired: boolean;
@@ -13,7 +19,12 @@ interface AddPropertyFormProps {
     totalProperties: number;
 }
 
-export default function AddPropertyForm({ onAddProperty, isAdding, totalProperties }: AddPropertyFormProps) {
+export default function AddPropertyForm({ 
+    availableProperties, 
+    onAddProperty, 
+    isAdding, 
+    totalProperties 
+}: AddPropertyFormProps) {
     const [newProperty, setNewProperty] = useState({
         propertyId: '',
         isRequired: false,
@@ -44,15 +55,20 @@ export default function AddPropertyForm({ onAddProperty, isAdding, totalProperti
             
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
                 <div>
-                    <label className="block text-xs font-bold text-zinc-600 mb-2">Property ID *</label>
-                    <input 
-                        type="number"
+                    <label className="block text-xs font-bold text-zinc-600 mb-2">Select Property *</label>
+                    <select 
                         required
-                        placeholder="e.g. 123"
-                        className="w-full p-3 bg-white border border-zinc-200 rounded-xl outline-none font-bold text-sm focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 transition-all"
+                        className="w-full p-3 bg-white border border-zinc-200 rounded-xl outline-none font-bold text-sm focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 transition-all cursor-pointer"
                         value={newProperty.propertyId}
                         onChange={e => setNewProperty({...newProperty, propertyId: e.target.value})}
-                    />
+                    >
+                        <option value="" disabled>-- Choose a property --</option>
+                        {availableProperties.map(prop => (
+                            <option key={prop.id} value={prop.id}>
+                                {prop.name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 <div>

@@ -16,6 +16,7 @@ interface TemplateListViewProps {
     error: string | null;
     onRefresh: () => void;
     onViewTemplate: (id: number | string) => void;
+    onEditTemplate: (id: number | string) => void;
     onCreateRedirect: () => void;
 }
 
@@ -25,6 +26,7 @@ export const TemplateListView: React.FC<TemplateListViewProps> = ({
     error,
     onRefresh,
     onViewTemplate,
+    onEditTemplate,
     onCreateRedirect
 }) => {
     if (loading) {
@@ -80,19 +82,27 @@ export const TemplateListView: React.FC<TemplateListViewProps> = ({
                         >
                             <div>
                                 <h2 className="text-xl font-black text-zinc-900 line-clamp-1 group-hover:text-zinc-700 transition-colors">
+                                    <span className="text-zinc-400 text-base font-normal mr-2">label:</span>
                                     {template.label}
                                 </h2>
                                 <p className="text-sm text-zinc-500 mt-3 line-clamp-3 leading-relaxed">
+                                    <span className="text-zinc-400 font-medium mr-2 block sm:inline">description:</span>
                                     {template.description || "No description provided for this template."}
                                 </p>
                             </div>
 
-                            <div className="mt-8 pt-5 border-t border-zinc-100">
+                            <div className="mt-8 pt-5 border-t border-zinc-100 flex gap-3">
                                 <Button
                                     onClick={() => onViewTemplate(template.id)}
-                                    className="w-full px-5 py-3 text-sm font-bold text-zinc-900 bg-zinc-100 rounded-xl hover:bg-zinc-200 transition-all cursor-pointer border-0"
+                                    className="flex-1 px-5 py-3 text-sm font-bold text-zinc-900 bg-zinc-100 rounded-xl hover:bg-zinc-200 transition-all cursor-pointer border-0"
                                 >
                                     View Details
+                                </Button>
+                                <Button
+                                    onClick={() => onEditTemplate(template.id)}
+                                    className="flex-1 px-5 py-3 text-sm font-bold text-white bg-zinc-800 rounded-xl hover:bg-zinc-700 transition-all cursor-pointer border-0"
+                                >
+                                    Edit
                                 </Button>
                             </div>
                         </div>

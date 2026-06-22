@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { notFound } from "next/navigation";
 import { useParams } from "next/navigation";
 import { useAuth } from "@/features/auth/context/AuthContext";
-import { ItemForm, type ItemFormValues } from "@/features/items/components/ItemForm";
+import { ItemForm, type ItemFormValues } from "@/features/items/ui/ItemForm";
 import { useItem } from "@/features/items/hooks/useItem";
 import { useUpdateItem } from "@/features/items/hooks/useUpdateItem";
 import "@/features/items/items.css";
