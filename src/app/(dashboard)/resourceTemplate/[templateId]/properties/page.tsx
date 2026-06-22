@@ -80,54 +80,50 @@ export default function ManageTemplatePropertiesPage() {
         ));
     };
 
-    // حالة التحميل المعياري (Early Return)
     if (isLoading) {
         return (
-            <div className="max-w-5xl mx-auto my-32 p-8 bg-white shadow-2xl rounded-3xl border border-gray-50 text-center">
-                <div className="font-bold text-gray-500 animate-pulse">Loading current template properties...</div>
+            <div className="max-w-5xl mx-auto my-32 p-12 bg-white shadow-xl shadow-zinc-200/50 rounded-3xl border border-zinc-100 text-center">
+                <div className="font-bold text-zinc-500 animate-pulse">Loading current template properties...</div>
             </div>
         );
     }
 
     return (
-        <div className="max-w-5xl mx-auto my-12 p-8 bg-white shadow-2xl rounded-3xl border border-gray-50">
-            {/* Header and title */}
-            <div className="mb-8 text-right border-b border-gray-100 pb-6">
-                <h1 className="text-3xl font-black text-gray-900">Template Properties Management Panel</h1>
-                <p className="text-gray-500 mt-2">Add new properties, update existing links, or remove them from the template.</p>
+        <div className="max-w-5xl mx-auto my-12 p-8 bg-white shadow-xl shadow-zinc-200/50 rounded-3xl border border-zinc-100">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end mb-10 border-b border-zinc-100 pb-6 gap-4">
+                <div>
+                    <h1 className="text-3xl font-black text-zinc-900 tracking-tight">Manage Properties</h1>
+                    <p className="text-zinc-500 mt-2 font-medium">Add new properties, update existing links, or remove them.</p>
+                </div>
+                <button
+                    type="button"
+                    onClick={() => router.push('/resourceTemplate')}
+                    className="px-6 py-2.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-bold rounded-xl transition-all text-sm cursor-pointer self-start sm:self-auto border-0"
+                >
+                    &larr; Back to Templates
+                </button>
             </div>
 
-            {/* General error panel */}
             {actionError && (
-                <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-2xl border border-red-100 text-sm font-medium text-right">
-                    ⚠️ {actionError}
+                <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-2xl border border-red-100 text-sm font-medium">
+                    {actionError}
                 </div>
             )}
 
-            {/* Add property section component */}
             <AddPropertyForm 
                 onAddProperty={handleAddProperty} 
                 isAdding={isAdding} 
                 totalProperties={linkedProperties.length} 
             />
 
-            {/* Table of current properties component */}
-            <PropertiesTable 
-                properties={linkedProperties}
-                onFieldChange={handleLocalFieldChange}
-                onUpdateRow={handleUpdateRow}
-                onRemoveRow={handleRemoveRow}
-            />
-            
-            {/* Back button */}
-            <div className="mt-8 text-right">
-                <button
-                    type="button"
-                    onClick={() => router.back()}
-                    className="px-8 py-3 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold rounded-2xl transition-all text-sm cursor-pointer"
-                >
-                    Back to template main page
-                </button>
+            <div className="mt-8">
+                <h3 className="text-lg font-black text-zinc-900 mb-4">Linked Properties</h3>
+                <PropertiesTable 
+                    properties={linkedProperties}
+                    onFieldChange={handleLocalFieldChange}
+                    onUpdateRow={handleUpdateRow}
+                    onRemoveRow={handleRemoveRow}
+                />
             </div>
         </div>
     );

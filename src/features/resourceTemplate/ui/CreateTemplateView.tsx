@@ -26,67 +26,60 @@ export const CreateTemplateView: React.FC<CreateTemplateViewProps> = ({
     onCancel
 }) => {
     return (
-        <div className="max-w-2xl mx-auto my-16 p-8 bg-white shadow-2xl rounded-3xl border border-gray-50">
-            <div className="mb-8 text-center">
-                <h1 className="text-3xl font-black text-gray-900">Create New Template</h1>
-                <p className="text-gray-500 mt-2">حدد المسمى والوصف لبناء هيكل الموارد الجديد</p>
+        <div className="max-w-3xl mx-auto my-16 p-8 bg-white shadow-xl shadow-zinc-200/50 rounded-3xl border border-zinc-100">
+            <div className="mb-10 text-center">
+                <h1 className="text-3xl font-black text-zinc-900 tracking-tight">Create New Template</h1>
+                <p className="text-zinc-500 mt-3">Define the label, description, and properties for your new resource structure</p>
             </div>
 
-            <form onSubmit={onSubmit} className="space-y-6">
-                {/* Field for Template Label */}
+            <form onSubmit={onSubmit} className="space-y-8">
                 <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Template Label *</label>
+                    <label className="block text-sm font-bold text-zinc-700 mb-2">Template Label <span className="text-red-500">*</span></label>
                     <Input
                         type="text"
                         required
-                        className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none"
-                        placeholder="مثلاً: Course Template أو User Profile"
+                        className="w-full p-4 bg-zinc-50 border border-zinc-200 rounded-2xl focus:ring-2 focus:ring-zinc-900 focus:border-zinc-900 transition-all outline-none"
+                        placeholder="e.g. Course Template"
                         value={formData.label}
                         onChange={(e) => setFormData({ ...formData, label: e.target.value })}
                     />
                 </div>
 
-                {/* Field for Template Description */}
                 <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Description</label>
+                    <label className="block text-sm font-bold text-zinc-700 mb-2">Description</label>
                     <textarea
                         rows={4}
-                        className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none"
-                        placeholder="اكتب وصفاً موجزاً عن الغرض من هذا القالب..."
+                        className="w-full p-4 bg-zinc-50 border border-zinc-200 rounded-2xl focus:ring-2 focus:ring-zinc-900 focus:border-zinc-900 transition-all outline-none resize-none"
+                        placeholder="Write a brief description..."
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Select Properties</label>
+                    <label className="block text-sm font-bold text-zinc-700 mb-2">Template Properties</label>
                     <TemplatePropertySelector onChange={onSelectedPropertiesChange} />
-                    <p className="text-xs text-gray-500 mt-2">
-                        اختر الخصائص التي تريد ربطها بالقالب. يمكنك تعديل ترتيب العرض والتسمية البديلة لكل خاصية بعد الاختيار.
-                    </p>
                 </div>
 
-                {/* Display Errors if any */}
                 {error && (
                     <div className="p-4 bg-red-50 text-red-600 rounded-2xl border border-red-100 text-sm font-medium">
-                        ⚠️ {error}
+                        {error}
                     </div>
                 )}
 
-                {/* Control Buttons */}
-                <div className="flex gap-4 pt-4">
+                <div className="flex gap-4 pt-6 border-t border-zinc-100">
                     <Button
                         type="submit"
                         disabled={isSubmitting}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-6 rounded-2xl shadow-lg shadow-blue-200 disabled:bg-blue-300 disabled:shadow-none transition-all"
+                        className="flex-1 bg-zinc-900 hover:bg-zinc-800 text-white font-bold py-6 rounded-2xl shadow-lg shadow-zinc-200 disabled:opacity-50 disabled:shadow-none transition-all border-0"
                     >
-                        {isSubmitting ? "Saving Template..." : "Create Template"}
+                        {isSubmitting ? "Saving..." : "Create Template"}
                     </Button>
                     
                     <Button
                         type="button"
                         onClick={onCancel}
-                        className="px-8 py-6 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold rounded-2xl transition-all"
+                        className="px-8 py-6 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-bold rounded-2xl transition-all border-0"
                     >
                         Cancel
                     </Button>

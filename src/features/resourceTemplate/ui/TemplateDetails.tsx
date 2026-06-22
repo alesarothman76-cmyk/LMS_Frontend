@@ -20,80 +20,67 @@ export const ResourceView: React.FC<ResourceViewProps> = ({
     const router = useRouter();
 
     return (
-        <div className="max-w-3xl mx-auto my-12 p-6 space-y-6">
+        <div className="max-w-3xl mx-auto my-12 p-8 bg-white rounded-3xl shadow-xl shadow-zinc-200/50 border border-zinc-100 space-y-8">
             
-            {/* Header section */}
-            <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-zinc-100 pb-6 gap-4">
                 <div>
-                    <h1 className="text-2xl font-black text-gray-900">
+                    <h1 className="text-3xl font-black text-zinc-900 tracking-tight">
                         {template?.label || "Untitled Template"}
                     </h1>
-                    <p className="text-sm text-gray-500 mt-1">
-                        Manage and review the details of this template
+                    <p className="text-sm text-zinc-500 mt-2 font-medium">
+                        Template Explorer & Management
                     </p>
                 </div>
-                <span className="text-xs font-bold uppercase tracking-wider px-3 py-1.5 bg-blue-50 text-blue-600 rounded-xl border border-blue-100">
-                    Template Explorer
-                </span>
+                <button
+                    onClick={() => router.push('/resourceTemplate')}
+                    className="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-bold rounded-xl transition-all text-sm self-start sm:self-auto cursor-pointer border-0"
+                >
+                    &larr; Back to Templates
+                </button>
             </div>
 
-            {/* Cards grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                {/* First card: System index ID */}
-                <div className="p-6 bg-white shadow-sm rounded-2xl border border-gray-100 flex flex-col justify-between">
+                <div className="p-6 bg-zinc-50 rounded-2xl border border-zinc-200 flex flex-col justify-between">
                     <div>
-                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">System Index ID</h3>
-                        <p className="text-3xl font-black font-mono text-gray-800 mt-3">
+                        <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest">System ID</h3>
+                        <p className="text-4xl font-black font-mono text-zinc-900 mt-3">
                             #{template?.id || '---'}
                         </p>
                     </div>
-                    <div className="mt-4 text-xs text-gray-400">
-                        The unique identifier of this template in the system database.
-                    </div>
                 </div>
 
-                {/* Second card: Status */}
-                <div className="p-6 bg-white shadow-sm rounded-2xl border border-gray-100 flex flex-col justify-between">
+                <div className="p-6 bg-zinc-50 rounded-2xl border border-zinc-200 flex flex-col justify-between">
                     <div>
-                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Status</h3>
-                        <div className="mt-4 flex items-center gap-2">
-                            <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                            <span className="text-sm font-bold text-emerald-600">Active & Ready</span>
+                        <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Status</h3>
+                        <div className="mt-4 flex items-center gap-3">
+                            <span className="w-3 h-3 bg-zinc-800 rounded-full animate-pulse"></span>
+                            <span className="text-base font-bold text-zinc-800">Active & Ready</span>
                         </div>
-                    </div>
-                    <div className="mt-4 text-xs text-gray-400">
-                        The template is enabled and ready to link and manage properties.
                     </div>
                 </div>
             </div>
 
-            {/* Description card (full width) */}
-            <div className="p-6 bg-white shadow-sm rounded-2xl border border-gray-100">
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wide">Description</h3>
-                <p className="text-gray-700 mt-2 bg-gray-50/70 p-5 rounded-xl border border-gray-50 min-h-20 leading-relaxed">
-                    {template?.description || <span className="text-gray-300 italic">No description provided for this template.</span>}
+            <div className="p-6 bg-zinc-50 rounded-2xl border border-zinc-200">
+                <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Description</h3>
+                <p className="text-zinc-700 leading-relaxed font-medium">
+                    {template?.description || <span className="text-zinc-400 italic">No description provided.</span>}
                 </p>
             </div>
 
-            {/* Properties Management Button */}
-            <div className="bg-white p-4 shadow-sm rounded-2xl border border-gray-100">
+            <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-zinc-100">
                 <Button 
                     onClick={() => router.push(`/resourceTemplate/${templateId}/properties`)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-xl w-full font-bold transition-all cursor-pointer shadow-sm border-0"
+                    className="flex-1 bg-zinc-900 hover:bg-zinc-800 text-white p-4 rounded-xl font-bold transition-all cursor-pointer shadow-lg shadow-zinc-200 border-0"
                 >
                     Manage Properties
                 </Button>
-            </div>
-            
-            {/* Delete button */}
-            <div className="bg-white p-4 shadow-sm rounded-2xl border border-gray-100">
+                
                 <Button 
                     onClick={() => onDelete(templateId)}
                     disabled={isDeleting}
-                    className="bg-red-600 hover:bg-red-700 text-white p-4 rounded-xl disabled:bg-red-300 w-full font-bold transition-all cursor-pointer shadow-sm border-0"
+                    className="sm:w-1/3 bg-red-50 hover:bg-red-100 text-red-600 p-4 rounded-xl disabled:opacity-50 font-bold transition-all cursor-pointer border border-red-100"
                 >
-                    {isDeleting ? "Deleting..." : "Delete this template"}
+                    {isDeleting ? "Deleting..." : "Delete Template"}
                 </Button>
             </div>
         </div>

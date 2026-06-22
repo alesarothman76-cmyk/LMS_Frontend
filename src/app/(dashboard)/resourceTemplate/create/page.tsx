@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useCreateTemplate } from '../../../../features/resourceTemplate/hooks/useCreateTemplate';
 import { PropertyToTemplateInput } from '../../../../features/resourceTemplate/types';
 import { CreateTemplateView } from '../../../../features/resourceTemplate/ui/CreateTemplateView';
 
 export default function CreateTemplatePage() {
+    const router = useRouter();
     const [formData, setFormData] = useState({ label: '', description: '' });
     const [selectedProperties, setSelectedProperties] = useState<PropertyToTemplateInput[]>([]);
     const { create, isSubmitting, error } = useCreateTemplate();
@@ -20,7 +22,7 @@ export default function CreateTemplatePage() {
             propertyLinks: selectedProperties,
         });
     };
-console.log("Data submitted from Create Template Page:", formData);
+
     return (
         <CreateTemplateView 
             formData={formData}
@@ -29,7 +31,7 @@ console.log("Data submitted from Create Template Page:", formData);
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
             error={error}
-            onCancel={() => window.history.back()}
+            onCancel={() => router.push('/resourceTemplate')}
         />
     );
 }
