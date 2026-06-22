@@ -2,8 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { mediaService } from '../services/mediaService';
 import { MediaDto } from '../types';
-import { mockMedia } from '../mock/media';
-//import { mockMedia } from '../../resourceTemplate/mock/templates';
 
 export const useAllMedia = () => {
   const [mediaList, setMediaList] = useState<MediaDto[]>([]);
@@ -22,7 +20,6 @@ export const useAllMedia = () => {
       } else {
         setError('Unable to load media from API. Showing offline data.');
       }
-      setMediaList(mockMedia);
     } finally {
       setLoading(false);
     }

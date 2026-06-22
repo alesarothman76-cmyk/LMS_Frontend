@@ -66,6 +66,7 @@ export function ItemForm({
   const {
     control,
     setValue,
+    setError,
     clearErrors,
     handleSubmit,
     formState: { errors },
@@ -96,8 +97,38 @@ export function ItemForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [template]);
 
+  // Backend rejects clearing a value for a property the template marks as
+  // required (ResourceRepository.RemoveValueAsync throws). Catch that here,
+  // before the request goes out, so the user gets a field-level error
+  // instead of a generic "couldn't save" failure.
+  const handleFormSubmit = handleSubmit((values) => {
+    let hasMissingRequired = false;
+
+    values.values.forEach((value, index) => {
+      const property = template?.properties.find((p) => p.propertyId === value.propertyId);
+      if (!property?.isRequired) return;
+
+      const isBlank =
+        (!value.valueText || value.valueText.trim() === "") &&
+        (!value.valueUri || value.valueUri.trim() === "") &&
+        value.valueResourceId == null;
+
+      if (isBlank) {
+        hasMissingRequired = true;
+        setError(`values.${index}.valueText`, {
+          type: "required",
+          message: "This field is required",
+        });
+      }
+    });
+
+    if (hasMissingRequired) return;
+
+    onSubmit(values);
+  });
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="catalog-form">
+    <form onSubmit={handleFormSubmit} className="catalog-form">
       
       {/* Template Selection using Shadcn Select component directly */}
       <div className="catalog-field">
