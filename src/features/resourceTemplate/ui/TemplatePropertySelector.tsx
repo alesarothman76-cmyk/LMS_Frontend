@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { resourceService } from '../services/resourceService';
-import { mockVocabularies } from '../mock/vocabularies';
 import { PropertyToTemplateInput } from '../types';
 
 export interface Property {
@@ -38,7 +37,6 @@ export const TemplatePropertySelector = ({ onChange }: Props) => {
                 }
             } catch (err) {
                 console.error("Error loading vocabularies, falling back to mock data", err);
-                setData(mockVocabularies);
             } finally {
                 setIsLoading(false);
             }
@@ -95,11 +93,17 @@ export const TemplatePropertySelector = ({ onChange }: Props) => {
                         {vocab.properties?.map((prop) => {
                             const selected = !!selectionMap[prop.id];
                             const sel = selectionMap[prop.id];
+                            
+                            // Generate unique IDs for the inputs to safely connect labels
+                            const altLabelId = `alt-label-${prop.id}`;
+                            const displayOrderId = `display-order-${prop.id}`;
+
                             return (
                                 <div key={prop.id} className="flex items-start space-x-3 p-1 hover:bg-blue-50 rounded transition">
                                     <div className="flex items-center">
                                         <input
                                             type="checkbox"
+                                            id={`prop-checkbox-${prop.id}`}
                                             className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                                             checked={selected}
                                             onChange={() => toggleProperty(prop.id)}
@@ -107,25 +111,37 @@ export const TemplatePropertySelector = ({ onChange }: Props) => {
                                     </div>
                                     <div className="flex-1">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-sm text-gray-700 select-none">
+                                            <label 
+                                                htmlFor={`prop-checkbox-${prop.id}`} 
+                                                className="text-sm text-gray-700 select-none cursor-pointer"
+                                            >
                                                 {prop.label} ({prop.localName})
-                                            </span>
+                                            </label>
                                         </div>
 
                                         {selected && (
                                             <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
                                                 <div>
-                                                    <label className="block text-gray-500">Alternate Label</label>
+                                                    <label htmlFor={altLabelId} className="block text-gray-500 mb-1">
+                                                        Alternate Label
+                                                    </label>
                                                     <input
+                                                        id={altLabelId}
+                                                        type="text"
+                                                        placeholder="Enter alternate label"
                                                         value={sel?.alternateLabel ?? ''}
                                                         onChange={(e) => updateField(prop.id, 'alternateLabel', e.target.value || null)}
                                                         className="w-full p-1 border rounded"
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="block text-gray-500">Display Order</label>
+                                                    <label htmlFor={displayOrderId} className="block text-gray-500 mb-1">
+                                                        Display Order
+                                                    </label>
                                                     <input
+                                                        id={displayOrderId}
                                                         type="number"
+                                                        placeholder="0"
                                                         value={sel?.displayOrder ?? 0}
                                                         onChange={(e) => updateField(prop.id, 'displayOrder', Number(e.target.value))}
                                                         className="w-full p-1 border rounded"

@@ -32,7 +32,7 @@ import {
 import { Checkbox } from "@/shared/ui/checkbox";
 import { ScrollArea } from "@/shared/ui/scroll-area";
 
-import { useAuth } from "../../../../features/auth/context/AuthContext"
+import { useAuth } from "../../../../features/auth/context/AuthContext";
 import { useAddItemToSet } from "../../../../features/itemSets/hooks/useAddItemToSet";
 import { useRemoveItemFromSet } from "../../../../features/itemSets/hooks/useRemoveItemFromSet";
 import { useItemSet } from "../../../../features/itemSets/hooks/useItemSet";
@@ -60,7 +60,6 @@ export default function ItemSetDetailPage() {
     if (selectedItemIds.length === 0) return;
 
     try {
-      // Use mutateAsync if available or wrap in Promise to wait for all
       await Promise.all(
         selectedItemIds.map(itemId => addItemToSet.mutateAsync({ setId, itemId }))
       );
@@ -73,14 +72,6 @@ export default function ItemSetDetailPage() {
 
   const handleRemoveItem = (itemId: number) => {
     removeItemFromSet.mutate({ setId, itemId });
-  };
-
-  const toggleSelection = (itemId: number) => {
-    setSelectedItemIds(prev => 
-      prev.includes(itemId) 
-        ? prev.filter(id => id !== itemId)
-        : [...prev, itemId]
-    );
   };
 
   if (isLoading) {
@@ -191,26 +182,40 @@ export default function ItemSetDetailPage() {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {availableItems.map((item) => (
-                            <TableRow 
-                              key={item.id} 
-                              className="cursor-pointer"
-                              onClick={() => toggleSelection(item.id)}
-                            >
-                              <TableCell className="text-center">
-                                <Checkbox 
-                                  checked={selectedItemIds.includes(item.id)} 
-                                  onCheckedChange={() => toggleSelection(item.id)}
-                                  onClick={(e) => e.stopPropagation()}
-                                />
-                              </TableCell>
-                              <TableCell className="font-medium">{item.id}</TableCell>
-                              <TableCell>{item.templateId}</TableCell>
-                              <TableCell className="text-muted-foreground">
-                                {item.values.length} value{item.values.length === 1 ? "" : "s"}
-                              </TableCell>
-                            </TableRow>
-                          ))}
+                          {availableItems.map((item) => {
+                            const isSelected = selectedItemIds.includes(item.id);
+
+                            return (
+                              <TableRow 
+                                key={item.id} 
+                                className="cursor-pointer"
+                                onClick={() => {
+                                  setSelectedItemIds(prev => 
+                                    isSelected ? prev.filter(id => id !== item.id) : [...prev, item.id]
+                                  );
+                                }}
+                              >
+                                <TableCell className="text-center">
+                                  <Checkbox 
+                                    checked={isSelected} 
+                                    onCheckedChange={(checked) => {
+                                      setSelectedItemIds(prev =>
+                                        checked 
+                                          ? [...prev, item.id] 
+                                          : prev.filter(id => id !== item.id)
+                                      );
+                                    }}
+                                    onClick={(e) => e.stopPropagation()}
+                                  />
+                                </TableCell>
+                                <TableCell className="font-medium">{item.id}</TableCell>
+                                <TableCell>{item.templateId}</TableCell>
+                                <TableCell className="text-muted-foreground">
+                                  {item.values.length} value{item.values.length === 1 ? "" : "s"}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
                         </TableBody>
                       </Table>
                     )}

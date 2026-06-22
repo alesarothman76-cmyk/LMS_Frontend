@@ -99,7 +99,7 @@ export const VocabularyList: React.FC<VocabularyListProps> = ({
                                         size="sm" 
                                         onClick={() => onEdit(voc.id)}
                                     >
-                                        See Propreties
+                                        Edit
                                     </Button>
                                     <Button 
                                         variant="destructive" 
