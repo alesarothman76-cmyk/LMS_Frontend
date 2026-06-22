@@ -17,7 +17,7 @@ export const useDeleteTemplate = () => {
         try {
             const result = await resourceService.deleteTemplate(templateId);
             if (result.success) {
-                router.push('/templates'); 
+                router.push('/resourceTemplate'); 
             }
         } catch (err: unknown) {
             if (axios.isAxiosError(err)) {
