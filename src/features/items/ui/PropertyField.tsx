@@ -39,15 +39,20 @@ export function PropertyField({
       <Controller
         name={fieldName}
         control={control}
-        render={({ field }) => (
-          <input
-            id={`prop-${property.propertyId}`}
-            type="text"
-            className="catalog-input"
-            placeholder="Enter value…"
-            value={field.value ?? ""}
-            onChange={field.onChange}
-          />
+        render={({ field, fieldState }) => (
+          <>
+            <input
+              id={`prop-${property.propertyId}`}
+              type="text"
+              className="catalog-input"
+              placeholder="Enter value…"
+              value={field.value ?? ""}
+              onChange={field.onChange}
+            />
+            {fieldState.error && (
+              <p className="catalog-field__error">{fieldState.error.message}</p>
+            )}
+          </>
         )}
       />
     </div>

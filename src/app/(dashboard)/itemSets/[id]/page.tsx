@@ -7,7 +7,6 @@ import { ArrowLeft, Globe, Lock, Plus, X } from "lucide-react";
 
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
-import { Input } from "@/shared/ui/input";
 import {
   Table,
   TableBody,
@@ -30,11 +29,14 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/shared/ui/tooltip";
+import { Checkbox } from "@/shared/ui/checkbox";
+import { ScrollArea } from "@/shared/ui/scroll-area";
 
-import { useAuth } from "../../../../features/auth/context/AuthContext"
+import { useAuth } from "../../../../features/auth/context/AuthContext";
 import { useAddItemToSet } from "../../../../features/itemSets/hooks/useAddItemToSet";
 import { useRemoveItemFromSet } from "../../../../features/itemSets/hooks/useRemoveItemFromSet";
 import { useItemSet } from "../../../../features/itemSets/hooks/useItemSet";
+import { useItems } from "@/features/items/hooks/useItems";
 
 export default function ItemSetDetailPage() {
   const params = useParams<{ id: string }>();
@@ -44,27 +46,28 @@ export default function ItemSetDetailPage() {
   const canRemoveItems = hasRole(["Admin", "Librarian"]);
 
   const { data, isLoading, isError } = useItemSet(setId);
+  const { data: allItems, isLoading: itemsLoading } = useItems();
+  
   const addItemToSet = useAddItemToSet();
   const removeItemFromSet = useRemoveItemFromSet();
 
   const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const [itemIdInput, setItemIdInput] = useState("");
+  const [selectedItemIds, setSelectedItemIds] = useState<number[]>([]);
 
-  const handleAddItem = (event: FormEvent<HTMLFormElement>) => {
+  const handleAddItem = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const itemId = Number(itemIdInput);
-    if (!itemId || Number.isNaN(itemId)) return;
+    if (selectedItemIds.length === 0) return;
 
-    addItemToSet.mutate(
-      { setId, itemId },
-      {
-        onSuccess: () => {
-          setItemIdInput("");
-          setAddDialogOpen(false);
-        },
-      }
-    );
+    try {
+      await Promise.all(
+        selectedItemIds.map(itemId => addItemToSet.mutateAsync({ setId, itemId }))
+      );
+      setSelectedItemIds([]);
+      setAddDialogOpen(false);
+    } catch (error) {
+      console.error("Failed to add some items", error);
+    }
   };
 
   const handleRemoveItem = (itemId: number) => {
@@ -93,6 +96,11 @@ export default function ItemSetDetailPage() {
   }
 
   const { setInfo, members } = data;
+
+  // Filter out items that are already in this set
+  const availableItems = allItems?.filter(
+    (item) => !members.some((m) => m.id === item.id)
+  ) || [];
 
   return (
     <div className="flex flex-col gap-6 p-6">
@@ -138,42 +146,94 @@ export default function ItemSetDetailPage() {
         <h2 className="text-lg font-medium">Members</h2>
 
         {canRemoveItems && (
-          <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
+          <Dialog open={addDialogOpen} onOpenChange={(open) => {
+            setAddDialogOpen(open);
+            if (!open) setSelectedItemIds([]);
+          }}>
             <DialogTrigger asChild>
               <Button size="sm">
                 <Plus className="mr-2 h-4 w-4" />
-                Add item
+                Add items
               </Button>
             </DialogTrigger>
-            <DialogContent>
-              <form onSubmit={handleAddItem}>
-                <DialogHeader>
-                  <DialogTitle>Add item to set</DialogTitle>
+            <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
+              <form onSubmit={handleAddItem} className="flex flex-col h-full overflow-hidden">
+                <DialogHeader className="pb-4">
+                  <DialogTitle>Add items to set</DialogTitle>
                   <DialogDescription>
-                    Enter the ID of an existing item to add it to this set.
+                    Browse and select existing items to add to this set.
                   </DialogDescription>
                 </DialogHeader>
-                <div className="py-4">
-                  <label htmlFor="itemId" className="text-sm font-medium">
-                    Item ID
-                  </label>
-                  <Input
-                    id="itemId"
-                    type="number"
-                    value={itemIdInput}
-                    onChange={(e) => setItemIdInput(e.target.value)}
-                    placeholder="e.g. 42"
-                    className="mt-2"
-                    autoFocus
-                  />
+                
+                <div className="flex-1 overflow-hidden min-h-0 border rounded-md mb-4">
+                  <ScrollArea className="h-[40vh] w-full">
+                    {itemsLoading ? (
+                      <div className="p-4 text-center text-sm text-muted-foreground">Loading items...</div>
+                    ) : availableItems.length === 0 ? (
+                      <div className="p-4 text-center text-sm text-muted-foreground">No additional items available to add.</div>
+                    ) : (
+                      <Table>
+                        <TableHeader className="sticky top-0 bg-background z-10">
+                          <TableRow>
+                            <TableHead className="w-12 text-center"></TableHead>
+                            <TableHead>Item ID</TableHead>
+                            <TableHead>Template ID</TableHead>
+                            <TableHead>Values</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {availableItems.map((item) => {
+                            const isSelected = selectedItemIds.includes(item.id);
+
+                            return (
+                              <TableRow 
+                                key={item.id} 
+                                className="cursor-pointer"
+                                onClick={() => {
+                                  setSelectedItemIds(prev => 
+                                    isSelected ? prev.filter(id => id !== item.id) : [...prev, item.id]
+                                  );
+                                }}
+                              >
+                                <TableCell className="text-center">
+                                  <Checkbox 
+                                    checked={isSelected} 
+                                    onCheckedChange={(checked) => {
+                                      setSelectedItemIds(prev =>
+                                        checked 
+                                          ? [...prev, item.id] 
+                                          : prev.filter(id => id !== item.id)
+                                      );
+                                    }}
+                                    onClick={(e) => e.stopPropagation()}
+                                  />
+                                </TableCell>
+                                <TableCell className="font-medium">{item.id}</TableCell>
+                                <TableCell>{item.templateId}</TableCell>
+                                <TableCell className="text-muted-foreground">
+                                  {item.values.length} value{item.values.length === 1 ? "" : "s"}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    )}
+                  </ScrollArea>
                 </div>
-                <DialogFooter>
-                  <Button
-                    type="submit"
-                    disabled={addItemToSet.isPending || !itemIdInput}
-                  >
-                    {addItemToSet.isPending ? "Adding…" : "Add item"}
-                  </Button>
+
+                <DialogFooter className="pt-2">
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-sm text-muted-foreground">
+                      {selectedItemIds.length} item(s) selected
+                    </span>
+                    <Button
+                      type="submit"
+                      disabled={addItemToSet.isPending || selectedItemIds.length === 0}
+                    >
+                      {addItemToSet.isPending ? "Adding…" : "Add selected items"}
+                    </Button>
+                  </div>
                 </DialogFooter>
               </form>
             </DialogContent>
