@@ -25,6 +25,11 @@ export default function VocabulariesPage() {
         router.push(`/vocabularies/${id}/edit`);
     };
 
+    // Redirect to the properties management page
+    const handleManagePropertiesRedirect = (id: string | number) => {
+        router.push(`/vocabularies/${id}/properties`);
+    };
+
     // Delete with automatic refresh
     const handleDelete = async (id: string | number) => {
         if (window.confirm('Are you sure you want to delete this vocabulary?')) {
@@ -42,6 +47,7 @@ export default function VocabulariesPage() {
             onEdit={handleEditRedirect}
             onDelete={handleDelete}
             onRefresh={refresh}
+            onManageProperties={handleManagePropertiesRedirect}
         />
     );
 }

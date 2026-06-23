@@ -13,6 +13,7 @@ interface VocabularyListProps {
     onEdit: (id: string | number) => void;
     onDelete: (id: string | number) => void;
     onRefresh: () => void;
+    onManageProperties: (id: string | number) => void;
 }
 
 export const VocabularyList: React.FC<VocabularyListProps> = ({
@@ -22,7 +23,8 @@ export const VocabularyList: React.FC<VocabularyListProps> = ({
     onCreate,
     onEdit,
     onDelete,
-    onRefresh
+    onRefresh,
+    onManageProperties
 }) => {
     const [searchPrefix, setSearchPrefix] = useState('');
 
@@ -94,6 +96,13 @@ export const VocabularyList: React.FC<VocabularyListProps> = ({
                                     {voc.namespaceUri}
                                 </td>
                                 <td className="p-4 text-center space-x-2 space-x-reverse">
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm" 
+                                        onClick={() => onManageProperties(voc.id)}
+                                    >
+                                        Properties
+                                    </Button>
                                     <Button 
                                         variant="outline" 
                                         size="sm" 

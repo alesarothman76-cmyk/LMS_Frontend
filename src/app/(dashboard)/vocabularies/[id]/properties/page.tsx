@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useVocabularyDetails } from '../../../../../features/vocabulary/hooks/useVocabularyDetails';
 import { PropertiesSection, PropertyItem } from '../../../../../features/vocabulary/ui/PropertiesSection';
@@ -40,6 +40,8 @@ function ManagePropertiesContent({
         setIsDialogOpen(true);
     };
 
+    
+
     const handleOpenEditDialog = (prop: PropertyItem): void => {
         setEditingPropId(prop.id ?? null);
         setPropForm({ 
@@ -48,7 +50,10 @@ function ManagePropertiesContent({
             localName: prop.localName || '' 
         });
         setIsDialogOpen(true);
+
+        
     };
+    
 
     const handlePropSubmit = async (e: React.FormEvent): Promise<void> => {
         e.preventDefault();
