@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { useVocabularyDetails } from '../../../../../features/vocabulary/hooks/useVocabularyDetails';
 import { useMutateVocabulary } from '../../../../../features/vocabulary/hooks/useMutateVocabulary';
 import { useFetchVocabularies } from '../../../../../features/vocabulary/hooks/useFetchVocabularies';
@@ -53,12 +52,7 @@ function EditVocabularyContent({
         <div className="p-6 max-w-4xl mx-auto space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold">Edit Vocabulary</h1>
-              <Link 
-                    href={`/vocabularies/${vocabularyId}/properties`}
-                    className="px-4 py-2 bg-[#a1887f] text-white rounded hover:bg-[#8d6e63] transition"
-                >
-    Manage Properties
-</Link>
+        
             </div>
             
             <EditVocabularyForm

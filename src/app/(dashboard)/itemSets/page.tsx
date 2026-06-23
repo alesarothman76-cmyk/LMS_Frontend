@@ -32,12 +32,26 @@ import {
 } from "@/shared/ui/alert-dialog";
 import { ScrollArea } from "@/shared/ui/scroll-area";
 
+import { useAuth } from "../../../features/auth/context/AuthContext";
 import { useDeleteItemSet } from "../../../features/itemSets/hooks/useDeleteItemSet";
 import { useItemSets } from "../../../features/itemSets/hooks/useItemSets";
+import { usePublicItemSets } from "../../../features/itemSets/hooks/usePublicItemSet";
 import { ItemSetDto } from "../../../features/itemSets/types/itemSetTypes";
 
 export default function ItemSetsListPage() {
-  const { data: itemSets, isLoading, isError } = useItemSets();
+  const { hasRole } = useAuth();
+
+  // Permission check for mutations (Create, Edit, Delete)
+  const canModifyItemSets = hasRole(["Admin", "Librarian"]);
+
+  // Members only ever see public item sets here; Admin/Librarian manage the full list.
+  const allItemSets = useItemSets();
+  const publicItemSets = usePublicItemSets();
+
+  const { data: itemSets, isLoading, isError } = canModifyItemSets
+    ? allItemSets
+    : publicItemSets;
+
   const deleteItemSet = useDeleteItemSet();
 
   const [pendingDelete, setPendingDelete] = useState<ItemSetDto | null>(null);
@@ -56,15 +70,21 @@ export default function ItemSetsListPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Item sets</h1>
           <p className="text-sm text-muted-foreground">
-            Group related items together and control who can see them.
+            {canModifyItemSets
+              ? "Group related items together and control who can see them."
+              : "Browse the item sets that have been made public."}
           </p>
         </div>
-        <Button asChild>
-          <Link href="/itemSets/new">
-            <Plus className="mr-2 h-4 w-4" />
-            New item set
-          </Link>
-        </Button>
+
+        {/* Conditionally render the "New item set" button */}
+        {canModifyItemSets && (
+          <Button asChild>
+            <Link href="/itemSets/new">
+              <Plus className="mr-2 h-4 w-4" />
+              New item set
+            </Link>
+          </Button>
+        )}
       </div>
 
       <ScrollArea className="rounded-md border">
@@ -97,7 +117,7 @@ export default function ItemSetsListPage() {
             {!isLoading && !isError && itemSets?.length === 0 && (
               <TableRow>
                 <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
-                  No item sets yet. Create one to get started.
+                  No item sets yet.
                 </TableCell>
               </TableRow>
             )}
@@ -129,25 +149,28 @@ export default function ItemSetsListPage() {
                       <Link href={`/itemSets/${itemSet.id}`}>Details</Link>
                     </Button>
 
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Open actions</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem asChild>
-                          <Link href={`/itemSets/${itemSet.id}/edit`}>Edit</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-destructive focus:text-destructive"
-                          onSelect={() => setPendingDelete(itemSet)}
-                        >
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    {/* Hide the entire action menu if the user lacks permissions */}
+                    {canModifyItemSets && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Open actions</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem asChild>
+                            <Link href={`/itemSets/${itemSet.id}/edit`}>Edit</Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
+                            onSelect={() => setPendingDelete(itemSet)}
+                          >
+                            Total delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
                   </div>
                 </TableCell>
               </TableRow>

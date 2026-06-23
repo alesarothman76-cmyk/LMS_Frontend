@@ -24,7 +24,7 @@ export function PropertyField({
   control: Control<ItemFormValues>;
 }) {
   const fieldName = `values.${index}.valueText` as const;
-  const label = property.alternateLabel ?? property.propertyId.toString();
+  const label = property.label ?? property.alternateLabel;
 
   return (
     <div className="catalog-field">
